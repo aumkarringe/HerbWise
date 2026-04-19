@@ -9,11 +9,11 @@ You type a condition like `headache` or `anxiety`. Five AI agents run in sequenc
 
 | Agent | What it does |
 |-------|-------------|
-| A1 — Remedy Hunter | Finds 5 herbs, 3–5 yoga poses, 3–5 acupressure points |
-| A2 — Science Validator | Checks peer-reviewed evidence for every item |
-| A3 — Pose & Point Verifier | Safety-checks yoga poses and verifies acupressure anatomy |
-| A4 — Citation Checker | Live-checks every source URL |
-| A5 — Report Builder | Assembles a clean, plain-English report |
+| A1 - Remedy Hunter | Finds 5 herbs, 3–5 yoga poses, 3–5 acupressure points |
+| A2 - Science Validator | Checks peer-reviewed evidence for every item |
+| A3 - Pose & Point Verifier | Safety-checks yoga poses and verifies acupressure anatomy |
+| A4 - Citation Checker | Live-checks every source URL |
+| A5 - Report Builder | Assembles a clean, plain-English report |
 
 You get a final report with evidence levels (strong / moderate / weak), safety warnings, dosage info, and verified citations — all in one place.
 
