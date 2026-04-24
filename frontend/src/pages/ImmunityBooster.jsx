@@ -33,7 +33,7 @@ export default function ImmunityBooster() {
             acute boost when feeling run down, and seasonal prevention.
           </p>
           <button style={styles.startBtn}
-            onClick={() => run("http://localhost:8000/immunity-booster/stream", { feature_key: "immunity_booster" })}>
+            onClick={() => run("/immunity-booster/stream", { feature_key: "immunity_booster" })}>
             Build My Immunity Protocol →
           </button>
         </div>

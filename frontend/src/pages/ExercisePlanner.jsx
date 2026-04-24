@@ -65,7 +65,7 @@ export default function ExercisePlanner() {
           <button
             style={{ ...styles.btn, opacity: condition.trim() ? 1 : 0.5 }}
             disabled={!condition.trim()}
-            onClick={() => run("http://localhost:8000/exercise-planner/stream", {
+            onClick={() => run("/exercise-planner/stream", {
               condition, fitness_level: level, feature_key: "exercise_planner"
             })}
           >

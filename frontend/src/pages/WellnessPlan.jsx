@@ -58,7 +58,7 @@ export default function WellnessPlan() {
           <button
             style={{ ...styles.btn, opacity: condition.trim() ? 1 : 0.5 }}
             disabled={!condition.trim()}
-            onClick={() => run("http://localhost:8000/wellness-plan/stream", {
+            onClick={() => run("/wellness-plan/stream", {
               condition, duration_days: days, feature_key: "wellness_plan"
             })}
           >

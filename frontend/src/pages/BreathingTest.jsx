@@ -30,7 +30,7 @@ export default function BreathingTest() {
             reduce anxiety, and regulate your nervous system.
           </p>
           <button style={styles.startBtn}
-            onClick={() => run("http://localhost:8000/breathing-test/stream", { feature_key: "breathing_test" })}>
+            onClick={() => run("/breathing-test/stream", { feature_key: "breathing_test" })}>
             Start Breathing Analysis →
           </button>
         </div>

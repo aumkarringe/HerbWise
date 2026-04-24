@@ -34,7 +34,7 @@ export default function StressRelief() {
             techniques and a full daily practice.
           </p>
           <button style={styles.startBtn}
-            onClick={() => run("http://localhost:8000/stress-relief/stream", { feature_key: "stress_relief" })}>
+            onClick={() => run("/stress-relief/stream", { feature_key: "stress_relief" })}>
             Build My Stress Relief Plan →
           </button>
         </div>

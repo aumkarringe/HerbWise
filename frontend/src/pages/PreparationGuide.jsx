@@ -45,7 +45,7 @@ export default function PreparationGuide() {
           <button
             style={{ ...styles.btn, opacity: condition.trim() ? 1 : 0.5 }}
             disabled={!condition.trim()}
-            onClick={() => run("http://localhost:8000/preparation-guide/stream", {
+            onClick={() => run("/preparation-guide/stream", {
               condition, herb_name: herbName || null, feature_key: "preparation_guide"
             })}
           >

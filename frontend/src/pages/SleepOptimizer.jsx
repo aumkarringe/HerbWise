@@ -16,7 +16,7 @@ export default function SleepOptimizer() {
   const { status, agentStates, agentSummaries, report, citations, error, run, fromCache, cacheMessage } = usePipeline()
 
   function handleStart() {
-    run("http://localhost:8000/sleep-optimizer/stream", { feature_key: "sleep_optimizer" })
+    run("/sleep-optimizer/stream", { feature_key: "sleep_optimizer" })
   }
 
   return (

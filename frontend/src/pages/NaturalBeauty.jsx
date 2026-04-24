@@ -26,7 +26,7 @@ export default function NaturalBeauty() {
 
   function handleSubmit() {
     if (!concern.trim()) return
-    run("http://localhost:8000/natural-beauty/stream", { beauty_concern: concern, feature_key: "natural_beauty" })
+    run("/natural-beauty/stream", { beauty_concern: concern, feature_key: "natural_beauty" })
   }
 
   return (

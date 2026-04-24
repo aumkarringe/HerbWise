@@ -55,7 +55,7 @@ export default function SeasonalRemedies() {
                   border: `1.5px solid ${s === currentSeason ? "#16a34a" : "#86efac"}`
                 }}
                 onClick={() => run(
-                  "http://localhost:8000/seasonal-remedies/stream",
+                  "/seasonal-remedies/stream",
                   { season: s.toLowerCase(), feature_key: "seasonal_remedies" }
                 )}
               >

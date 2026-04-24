@@ -26,7 +26,7 @@ export default function HomeRemediesPlus() {
 
   function handleSubmit() {
     if (!condition.trim()) return
-    run("http://localhost:8000/home-remedies/stream", { condition, feature_key: "home_remedies_plus" })
+    run("/home-remedies/stream", { condition, feature_key: "home_remedies_plus" })
   }
 
   return (

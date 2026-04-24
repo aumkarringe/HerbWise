@@ -58,7 +58,7 @@ export default function SafetyCheck() {
           <button
             style={{ ...styles.btn, opacity: isValid ? 1 : 0.5 }}
             disabled={!isValid}
-            onClick={() => run("http://localhost:8000/safety-check/stream", {
+            onClick={() => run("/safety-check/stream", {
               condition: form.condition,
               age: parseInt(form.age),
               weight_kg: parseFloat(form.weight_kg),
