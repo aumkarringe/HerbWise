@@ -13,7 +13,7 @@ const AGENTS = [
 ]
 
 export default function ImmunityBooster() {
-  const { status, agentStates, agentSummaries, report, citations, error, run } = usePipeline()
+  const { status, agentStates, agentSummaries, report, citations, error, run, fromCache, cacheMessage } = usePipeline()
 
   return (
     <div style={styles.container}>
@@ -33,14 +33,20 @@ export default function ImmunityBooster() {
             acute boost when feeling run down, and seasonal prevention.
           </p>
           <button style={styles.startBtn}
-            onClick={() => run("http://localhost:8000/immunity-booster/stream", {})}>
+            onClick={() => run("http://localhost:8000/immunity-booster/stream", { feature_key: "immunity_booster" })}>
             Build My Immunity Protocol →
           </button>
         </div>
       )}
 
       {status !== "idle" && (
-        <PipelineStepper agents={AGENTS} agentStates={agentStates} agentSummaries={agentSummaries} />
+        <PipelineStepper
+  agents={AGENTS}
+  agentStates={agentStates}
+  agentSummaries={agentSummaries}
+  fromCache={fromCache}
+  cacheMessage={cacheMessage}
+/>
       )}
       {status === "error" && <div style={styles.error}>⚠️ {error}</div>}
       {status === "done" && report && (

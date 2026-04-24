@@ -5,42 +5,45 @@ import CitationList    from "../components/CitationList"
 import usePipeline     from "../hooks/usePipeline"
 
 const AGENTS = [
-  { id: "A1", name: "Remedy Hunter",         desc: "Finding breathing techniques" },
-  { id: "A2", name: "Science Validator",     desc: "Checking respiratory research" },
-  { id: "A3", name: "Pose & Point Verifier", desc: "Verifying breath ratios" },
-  { id: "A4", name: "Citation Checker",      desc: "Validating sources" },
-  { id: "A5", name: "Report Builder",        desc: "Building breathing guide" },
+  { id: "A1", name: "Remedy Hunter",     desc: "Finding breathing techniques" },
+  { id: "A2", name: "Science Validator", desc: "Checking respiratory research" },
+  { id: "A4", name: "Citation Checker",  desc: "Validating sources" },
+  { id: "A5", name: "Report Builder",    desc: "Building breathing guide" },
 ]
 
 export default function BreathingTest() {
-  const { status, agentStates, agentSummaries, report, citations, error, run } = usePipeline()
-
+  const { status, agentStates, agentSummaries, report, citations, error, run, fromCache, cacheMessage } = usePipeline()
   return (
     <div style={styles.container}>
       <div style={styles.header}>
         <div style={styles.icon}>🌬️</div>
         <h1 style={styles.title}>Breathing Test</h1>
         <p style={styles.subtitle}>
-          Pranayama techniques with safe breath ratios, contraindications
-          and a 7-day beginner training schedule
+          Pranayama techniques with safe breath ratios and recommended practice schedule
         </p>
       </div>
 
       {status === "idle" && (
         <div style={styles.startCard}>
           <p style={styles.startText}>
-            Discover evidence-backed breathing exercises that improve lung
-            capacity, reduce anxiety and regulate your nervous system.
+            Discover evidence-backed breathing exercises (pranayama) that improve lung capacity,
+            reduce anxiety, and regulate your nervous system.
           </p>
           <button style={styles.startBtn}
-            onClick={() => run("http://localhost:8000/breathing-test/stream", {})}>
+            onClick={() => run("http://localhost:8000/breathing-test/stream", { feature_key: "breathing_test" })}>
             Start Breathing Analysis →
           </button>
         </div>
       )}
 
       {status !== "idle" && (
-        <PipelineStepper agents={AGENTS} agentStates={agentStates} agentSummaries={agentSummaries} />
+        <PipelineStepper
+  agents={AGENTS}
+  agentStates={agentStates}
+  agentSummaries={agentSummaries}
+  fromCache={fromCache}
+  cacheMessage={cacheMessage}
+/>
       )}
       {status === "error" && <div style={styles.error}>⚠️ {error}</div>}
       {status === "done" && report && (

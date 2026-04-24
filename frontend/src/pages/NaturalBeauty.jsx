@@ -20,12 +20,13 @@ const QUICK_CONCERNS = [
 ]
 
 export default function NaturalBeauty() {
-  const { status, agentStates, agentSummaries, report, citations, error, run } = usePipeline()
+  const { status, agentStates, agentSummaries, report, citations, 
+        error, run, fromCache, cacheMessage } = usePipeline()
   const [concern, setConcern] = useState("")
 
   function handleSubmit() {
     if (!concern.trim()) return
-    run("http://localhost:8000/natural-beauty/stream", { beauty_concern: concern })
+    run("http://localhost:8000/natural-beauty/stream", { beauty_concern: concern, feature_key: "natural_beauty" })
   }
 
   return (
@@ -75,7 +76,13 @@ export default function NaturalBeauty() {
       )}
 
       {status !== "idle" && (
-        <PipelineStepper agents={AGENTS} agentStates={agentStates} agentSummaries={agentSummaries} />
+        <PipelineStepper
+  agents={AGENTS}
+  agentStates={agentStates}
+  agentSummaries={agentSummaries}
+  fromCache={fromCache}
+  cacheMessage={cacheMessage}
+/>
       )}
       {status === "error" && <div style={styles.error}>⚠️ {error}</div>}
       {status === "done" && report && (

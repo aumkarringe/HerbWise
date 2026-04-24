@@ -6,16 +6,15 @@ import CitationList    from "../components/CitationList"
 import usePipeline     from "../hooks/usePipeline"
 
 const AGENTS = [
-  { id: "A1", name: "Remedy Hunter",         desc: "Finding herbs with dosage data" },
-  { id: "A2", name: "Science Validator",     desc: "Checking clinical dose studies" },
-  { id: "A3", name: "Pose & Point Verifier", desc: "Verifying practice durations" },
-  { id: "A4", name: "Citation Checker",      desc: "Validating dosage sources" },
-  { id: "A5", name: "Report Builder",        desc: "Building dosage report" },
+  { id: "A1", name: "Remedy Hunter",     desc: "Finding herbs with dosage data" },
+  { id: "A2", name: "Science Validator", desc: "Checking clinical dose studies" },
+  { id: "A4", name: "Citation Checker",  desc: "Validating dosage sources" },
+  { id: "A5", name: "Report Builder",    desc: "Building dosage report" },
 ]
 
 export default function DosageCalculator() {
-  const { status, agentStates, agentSummaries, report,
-          citations, extraData, error, run } = usePipeline()
+  const { status, agentStates, agentSummaries, report, citations, extraData,
+        error, run, fromCache, cacheMessage } = usePipeline()
   const [form, setForm] = useState({ condition: "", age: "", weight_kg: "" })
 
   function update(k, v) { setForm(p => ({ ...p, [k]: v })) }
@@ -57,7 +56,8 @@ export default function DosageCalculator() {
             onClick={() => run("http://localhost:8000/dosage-calculator/stream", {
               condition: form.condition,
               age: parseInt(form.age),
-              weight_kg: parseFloat(form.weight_kg)
+              weight_kg: parseFloat(form.weight_kg),
+              feature_key: "dosage_calculator"
             })}
           >
             Calculate My Dosages →
@@ -66,7 +66,13 @@ export default function DosageCalculator() {
       )}
 
       {status !== "idle" && (
-        <PipelineStepper agents={AGENTS} agentStates={agentStates} agentSummaries={agentSummaries} />
+        <PipelineStepper
+  agents={AGENTS}
+  agentStates={agentStates}
+  agentSummaries={agentSummaries}
+  fromCache={fromCache}
+  cacheMessage={cacheMessage}
+/>
       )}
       {status === "error" && <div style={styles.error}>⚠️ {error}</div>}
 

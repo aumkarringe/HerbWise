@@ -10,8 +10,9 @@ export default function SearchBar({ onSearch, disabled }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} style={styles.form}>
+    <form className="searchbar-form" onSubmit={handleSubmit} style={styles.form}>
       <input
+        className="searchbar-input"
         style={styles.input}
         type="text"
         placeholder='Enter a condition e.g. "headache", "insomnia", "anxiety"'
@@ -19,7 +20,7 @@ export default function SearchBar({ onSearch, disabled }) {
         onChange={e => setValue(e.target.value)}
         disabled={disabled}
       />
-      <button style={{
+      <button className="searchbar-button" style={{
         ...styles.button,
         opacity: disabled ? 0.6 : 1,
         cursor: disabled ? "not-allowed" : "pointer"

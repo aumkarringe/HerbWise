@@ -13,7 +13,8 @@ const AGENTS = [
 ]
 
 export default function StressRelief() {
-  const { status, agentStates, agentSummaries, report, citations, error, run } = usePipeline()
+  const { status, agentStates, agentSummaries, report, citations, 
+        error, run, fromCache, cacheMessage } = usePipeline()
 
   return (
     <div style={styles.container}>
@@ -33,14 +34,20 @@ export default function StressRelief() {
             techniques and a full daily practice.
           </p>
           <button style={styles.startBtn}
-            onClick={() => run("http://localhost:8000/stress-relief/stream", {})}>
+            onClick={() => run("http://localhost:8000/stress-relief/stream", { feature_key: "stress_relief" })}>
             Build My Stress Relief Plan →
           </button>
         </div>
       )}
 
       {status !== "idle" && (
-        <PipelineStepper agents={AGENTS} agentStates={agentStates} agentSummaries={agentSummaries} />
+        <PipelineStepper
+  agents={AGENTS}
+  agentStates={agentStates}
+  agentSummaries={agentSummaries}
+  fromCache={fromCache}
+  cacheMessage={cacheMessage}
+/>
       )}
       {status === "error" && <div style={styles.error}>⚠️ {error}</div>}
       {status === "done" && report && (

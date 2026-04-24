@@ -13,10 +13,10 @@ const AGENTS = [
 ]
 
 export default function SleepOptimizer() {
-  const { status, agentStates, agentSummaries, report, citations, error, run } = usePipeline()
+  const { status, agentStates, agentSummaries, report, citations, error, run, fromCache, cacheMessage } = usePipeline()
 
   function handleStart() {
-    run("http://localhost:8000/sleep-optimizer/stream", {})
+    run("http://localhost:8000/sleep-optimizer/stream", { feature_key: "sleep_optimizer" })
   }
 
   return (
@@ -43,14 +43,26 @@ export default function SleepOptimizer() {
       )}
 
       {status === "running" && (
-        <PipelineStepper agents={AGENTS} agentStates={agentStates} agentSummaries={agentSummaries} />
+        <PipelineStepper
+  agents={AGENTS}
+  agentStates={agentStates}
+  agentSummaries={agentSummaries}
+  fromCache={fromCache}
+  cacheMessage={cacheMessage}
+/>
       )}
 
       {status === "error" && <div style={styles.error}>⚠️ {error}</div>}
 
       {status === "done" && report && (
         <>
-          <PipelineStepper agents={AGENTS} agentStates={agentStates} agentSummaries={agentSummaries} />
+          <PipelineStepper
+  agents={AGENTS}
+  agentStates={agentStates}
+  agentSummaries={agentSummaries}
+  fromCache={fromCache}
+  cacheMessage={cacheMessage}
+/>
           <ReportView report={report} />
           <CitationList citations={citations} />
         </>

@@ -14,8 +14,8 @@ const AGENTS = [
 ]
 
 export default function WellnessPlan() {
-  const { status, agentStates, agentSummaries, report,
-          citations, extraData, error, run } = usePipeline()
+  const { status, agentStates, agentSummaries, report, citations, extraData,
+        error, run, fromCache, cacheMessage } = usePipeline()
   const [condition, setCondition] = useState("")
   const [days, setDays]           = useState(7)
 
@@ -59,7 +59,7 @@ export default function WellnessPlan() {
             style={{ ...styles.btn, opacity: condition.trim() ? 1 : 0.5 }}
             disabled={!condition.trim()}
             onClick={() => run("http://localhost:8000/wellness-plan/stream", {
-              condition, duration_days: days
+              condition, duration_days: days, feature_key: "wellness_plan"
             })}
           >
             Generate {days}-Day Plan →
@@ -68,7 +68,13 @@ export default function WellnessPlan() {
       )}
 
       {status !== "idle" && (
-        <PipelineStepper agents={AGENTS} agentStates={agentStates} agentSummaries={agentSummaries} />
+        <PipelineStepper
+  agents={AGENTS}
+  agentStates={agentStates}
+  agentSummaries={agentSummaries}
+  fromCache={fromCache}
+  cacheMessage={cacheMessage}
+/>
       )}
       {status === "error" && <div style={styles.error}>⚠️ {error}</div>}
 

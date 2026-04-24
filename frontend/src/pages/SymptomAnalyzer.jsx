@@ -14,8 +14,8 @@ const AGENTS = [
 ]
 
 export default function SymptomAnalyzer() {
-  const { status, agentStates, agentSummaries, report, citations,
-          error, detectedCondition, run } = usePipeline()
+  const { status, agentStates, agentSummaries, report, citations, 
+        error, run, fromCache, cacheMessage } = usePipeline()
   const [symptoms, setSymptoms] = useState("")
 
   return (
@@ -46,24 +46,23 @@ export default function SymptomAnalyzer() {
           <button
             style={{ ...styles.btn, opacity: symptoms.trim() ? 1 : 0.5 }}
             disabled={!symptoms.trim()}
-            onClick={() => run(
-              "http://localhost:8000/symptom-analyzer/stream",
-              { symptoms }
-            )}
+            onClick={() => {
+              run("/symptom-analyzer/stream", { symptoms: symptoms.trim(), feature_key: "symptom_analyzer" })
+            }}
           >
             Analyze My Symptoms →
           </button>
         </div>
       )}
 
-      {detectedCondition && (
-        <div style={styles.detectedBox}>
-          🔍 Detected condition: <strong>{detectedCondition}</strong>
-        </div>
-      )}
-
       {status !== "idle" && (
-        <PipelineStepper agents={AGENTS} agentStates={agentStates} agentSummaries={agentSummaries} />
+        <PipelineStepper
+  agents={AGENTS}
+  agentStates={agentStates}
+  agentSummaries={agentSummaries}
+  fromCache={fromCache}
+  cacheMessage={cacheMessage}
+/>
       )}
       {status === "error" && <div style={styles.error}>⚠️ {error}</div>}
       {status === "done" && report && (

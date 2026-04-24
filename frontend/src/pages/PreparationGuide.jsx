@@ -5,18 +5,17 @@ import CitationList    from "../components/CitationList"
 import usePipeline     from "../hooks/usePipeline"
 
 const AGENTS = [
-  { id: "A1", name: "Remedy Hunter",         desc: "Finding herbs to prepare" },
-  { id: "A2", name: "Science Validator",     desc: "Checking preparation evidence" },
-  { id: "A3", name: "Pose & Point Verifier", desc: "Verifying techniques" },
-  { id: "A4", name: "Citation Checker",      desc: "Validating sources" },
-  { id: "A5", name: "Report Builder",        desc: "Building preparation guide" },
+  { id: "A1", name: "Remedy Hunter",     desc: "Finding herbs to prepare" },
+  { id: "A2", name: "Science Validator", desc: "Checking preparation evidence" },
+  { id: "A4", name: "Citation Checker",  desc: "Validating sources" },
+  { id: "A5", name: "Report Builder",    desc: "Building preparation guide" },
 ]
 
 const DIFFICULTY_COLORS = { easy: "#16a34a", medium: "#d97706", hard: "#dc2626" }
 
 export default function PreparationGuide() {
-  const { status, agentStates, agentSummaries,
-          citations, extraData, error, run } = usePipeline()
+  const { status, agentStates, agentSummaries, report, citations, extraData,
+        error, run, fromCache, cacheMessage } = usePipeline()
   const [condition, setCondition] = useState("")
   const [herbName, setHerbName]   = useState("")
 
@@ -47,7 +46,7 @@ export default function PreparationGuide() {
             style={{ ...styles.btn, opacity: condition.trim() ? 1 : 0.5 }}
             disabled={!condition.trim()}
             onClick={() => run("http://localhost:8000/preparation-guide/stream", {
-              condition, herb_name: herbName || null
+              condition, herb_name: herbName || null, feature_key: "preparation_guide"
             })}
           >
             Generate Preparation Guides →
@@ -56,7 +55,13 @@ export default function PreparationGuide() {
       )}
 
       {status !== "idle" && (
-        <PipelineStepper agents={AGENTS} agentStates={agentStates} agentSummaries={agentSummaries} />
+        <PipelineStepper
+  agents={AGENTS}
+  agentStates={agentStates}
+  agentSummaries={agentSummaries}
+  fromCache={fromCache}
+  cacheMessage={cacheMessage}
+/>
       )}
       {status === "error" && <div style={styles.error}>⚠️ {error}</div>}
 

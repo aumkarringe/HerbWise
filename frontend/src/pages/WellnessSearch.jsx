@@ -1,9 +1,14 @@
 // src/pages/WellnessSearch.jsx
-import SearchBar       from "../components/SearchBar"
-import PipelineStepper from "../components/PipelineStepper"
-import ReportView      from "../components/ReportView"
-import CitationList    from "../components/CitationList"
-import usePipeline     from "../hooks/usePipeline"
+import { useState, useEffect }  from "react"
+import SearchBar                from "../components/SearchBar"
+import PipelineStepper          from "../components/PipelineStepper"
+import ReportView               from "../components/ReportView"
+import CitationList             from "../components/CitationList"
+import AuthWall                 from "../components/AuthWall"
+import SaveReportButton         from "../components/SaveReportButton"
+import usePipeline              from "../hooks/usePipeline"
+import { useAuth }              from "../context/AuthContext"
+import { hasUsedFreeSearch, markFreeSearchUsed } from "../hooks/useGuestLimit"
 
 const AGENTS = [
   { id: "A1", name: "Remedy Hunter",         desc: "Finding herbs, poses & points" },
@@ -14,25 +19,63 @@ const AGENTS = [
 ]
 
 export default function WellnessSearch() {
+  const { user } = useAuth()
   const {
     status, agentStates, agentSummaries,
-    report, citations, error, run
+    report, citations, error,
+    fromCache, cacheMessage, run
   } = usePipeline()
 
-  function handleSearch(condition) {
-    run("http://localhost:8000/analyze/stream", { condition })
+  const [showAuthWall,  setShowAuthWall]  = useState(false)
+  const [guestBlocked,  setGuestBlocked]  = useState(false)
+
+  // Check if guest already used their free search
+  useEffect(() => {
+    if (!user) {
+      hasUsedFreeSearch().then(used => {
+        if (used) setGuestBlocked(true)
+      })
+    }
+  }, [user])
+
+  async function handleSearch(condition) {
+    // Guest already used free search → show auth wall
+    if (!user && guestBlocked) {
+      setShowAuthWall(true)
+      return
+    }
+
+    run("http://localhost:8000/analyze/stream", { condition, feature_key: "wellness_search" })
+
+    // Mark free search as used for guest
+    if (!user) {
+      await markFreeSearchUsed()
+      setGuestBlocked(true)
+    }
   }
 
   return (
-    <div style={styles.container}>
+    <div className="ws-container" style={styles.container}>
 
-      <div style={styles.header}>
-        <h1 style={styles.title}>🔍 Wellness Search</h1>
-        <p style={styles.subtitle}>
+      {/* Auth wall modal - blocking, no close button */}
+      {showAuthWall && (
+        <AuthWall />
+      )}
+
+      {/* Header */}
+      <div className="ws-header" style={styles.header}>
+        <h1 className="ws-title" style={styles.title}>🔍 Wellness Search</h1>
+        <p className="ws-subtitle" style={styles.subtitle}>
           Search any condition — get evidence-validated herbs, yoga & acupressure
         </p>
+        {!user && !guestBlocked && (
+          <div className="ws-guest-notice" style={styles.guestNotice}>
+            ✨ You have 1 free search — sign in for unlimited access
+          </div>
+        )}
       </div>
 
+      {/* Always show search bar - it will block on second search attempt */}
       <SearchBar
         onSearch={handleSearch}
         disabled={status === "running"}
@@ -44,15 +87,25 @@ export default function WellnessSearch() {
           agents={AGENTS}
           agentStates={agentStates}
           agentSummaries={agentSummaries}
+          fromCache={fromCache}
+          cacheMessage={cacheMessage}
         />
       )}
 
       {status === "error" && (
-        <div style={styles.error}>⚠️ {error}</div>
+        <div className="ws-error" style={styles.error}>⚠️ {error}</div>
       )}
 
       {status === "done" && report && (
         <>
+          {user && (
+            <SaveReportButton
+              condition={report.condition}
+              featureKey="wellness_search"
+              report={report}
+              citations={citations}
+            />
+          )}
           <ReportView report={report} />
           <CitationList citations={citations} />
         </>
@@ -73,6 +126,16 @@ const styles = {
   header: { textAlign: "center" },
   title: { fontSize: 32, color: "#14532d", margin: 0 },
   subtitle: { color: "#4b7a5e", marginTop: 8, fontSize: 15 },
+  guestNotice: {
+    marginTop: 10,
+    display: "inline-block",
+    background: "#f0fdf4",
+    border: "1px solid #86efac",
+    borderRadius: 20,
+    padding: "6px 16px",
+    fontSize: 13,
+    color: "#166534"
+  },
   error: {
     background: "#fef2f2",
     border: "1px solid #fca5a5",

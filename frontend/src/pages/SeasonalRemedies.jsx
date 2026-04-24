@@ -23,7 +23,8 @@ function getCurrentSeason() {
 }
 
 export default function SeasonalRemedies() {
-  const { status, agentStates, agentSummaries, report, citations, error, run } = usePipeline()
+  const { status, agentStates, agentSummaries, report, citations, 
+        error, run, fromCache, cacheMessage } = usePipeline()
   const currentSeason = getCurrentSeason()
 
   return (
@@ -55,7 +56,7 @@ export default function SeasonalRemedies() {
                 }}
                 onClick={() => run(
                   "http://localhost:8000/seasonal-remedies/stream",
-                  { season: s.toLowerCase() }
+                  { season: s.toLowerCase(), feature_key: "seasonal_remedies" }
                 )}
               >
                 {s === "Spring"  ? "🌸" : ""}
@@ -70,7 +71,13 @@ export default function SeasonalRemedies() {
       )}
 
       {status !== "idle" && (
-        <PipelineStepper agents={AGENTS} agentStates={agentStates} agentSummaries={agentSummaries} />
+        <PipelineStepper
+  agents={AGENTS}
+  agentStates={agentStates}
+  agentSummaries={agentSummaries}
+  fromCache={fromCache}
+  cacheMessage={cacheMessage}
+/>
       )}
       {status === "error" && <div style={styles.error}>⚠️ {error}</div>}
       {status === "done" && report && (

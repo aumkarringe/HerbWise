@@ -32,3 +32,155 @@ body {
   transform: translateY(0);
   transition: all 0.2s ease;
 }
+
+/* Mobile responsiveness for app layout and shared feature components */
+@media (max-width: 900px) {
+  .app-main {
+    padding: 16px 12px !important;
+  }
+
+  .ws-container {
+    gap: 16px !important;
+    max-width: 100% !important;
+  }
+
+  .ws-title {
+    font-size: 26px !important;
+    line-height: 1.2 !important;
+  }
+
+  .ws-subtitle {
+    font-size: 14px !important;
+    line-height: 1.45 !important;
+  }
+
+  .searchbar-form {
+    flex-direction: column !important;
+    gap: 10px !important;
+  }
+
+  .searchbar-input,
+  .searchbar-button {
+    width: 100% !important;
+  }
+
+  .searchbar-button {
+    padding: 12px 14px !important;
+    font-size: 15px !important;
+  }
+
+  .pipeline-wrapper {
+    padding: 14px 12px !important;
+    border-radius: 12px !important;
+  }
+
+  .pipeline-heading {
+    margin-bottom: 12px !important;
+  }
+
+  .pipeline-card {
+    padding: 12px !important;
+  }
+
+  .pipeline-card-top {
+    gap: 10px !important;
+  }
+
+  .pipeline-agent-desc {
+    line-height: 1.35 !important;
+  }
+
+  .pipeline-badges {
+    gap: 6px !important;
+  }
+
+  .report-wrapper {
+    gap: 16px !important;
+  }
+
+  .report-section {
+    padding: 14px 12px !important;
+    border-radius: 12px !important;
+  }
+
+  .report-section-title {
+    font-size: 18px !important;
+  }
+
+  .report-card {
+    padding: 12px !important;
+  }
+
+  .report-card-header {
+    flex-wrap: wrap !important;
+    row-gap: 6px !important;
+  }
+
+  .report-grid {
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+    overflow-wrap: anywhere !important;
+  }
+
+  .report-table {
+    border: none !important;
+    border-radius: 0 !important;
+    overflow: visible !important;
+  }
+
+  .report-table-header {
+    display: none !important;
+  }
+
+  .report-table-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 10px !important;
+    margin-bottom: 10px !important;
+    padding: 10px !important;
+    min-height: 0 !important;
+  }
+
+  .report-table-cell {
+    padding: 0 !important;
+  }
+
+  .report-safety-box {
+    padding: 14px 12px !important;
+    border-radius: 12px !important;
+  }
+
+  .save-report-wrapper {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 8px !important;
+  }
+
+  .save-report-btn,
+  .save-report-saved {
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  .citations-wrapper {
+    padding: 14px 12px !important;
+    border-radius: 12px !important;
+  }
+
+  .citation-item {
+    gap: 8px !important;
+  }
+
+  .citation-link-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 6px !important;
+  }
+
+  .citation-link,
+  .citation-doi-link {
+    font-size: 12px !important;
+  }
+}

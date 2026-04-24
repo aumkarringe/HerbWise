@@ -20,7 +20,7 @@ const LEVELS = [
 ]
 
 export default function ExercisePlanner() {
-  const { status, agentStates, agentSummaries, report, citations, error, run } = usePipeline()
+  const { status, agentStates, agentSummaries, report, citations, error, run, fromCache, cacheMessage } = usePipeline()
   const [condition, setCondition]   = useState("")
   const [level, setLevel]           = useState("beginner")
 
@@ -66,7 +66,7 @@ export default function ExercisePlanner() {
             style={{ ...styles.btn, opacity: condition.trim() ? 1 : 0.5 }}
             disabled={!condition.trim()}
             onClick={() => run("http://localhost:8000/exercise-planner/stream", {
-              condition, fitness_level: level
+              condition, fitness_level: level, feature_key: "exercise_planner"
             })}
           >
             Build My Exercise Plan →
@@ -75,7 +75,13 @@ export default function ExercisePlanner() {
       )}
 
       {status !== "idle" && (
-        <PipelineStepper agents={AGENTS} agentStates={agentStates} agentSummaries={agentSummaries} />
+        <PipelineStepper
+  agents={AGENTS}
+  agentStates={agentStates}
+  agentSummaries={agentSummaries}
+  fromCache={fromCache}
+  cacheMessage={cacheMessage}
+/>
       )}
       {status === "error" && <div style={styles.error}>⚠️ {error}</div>}
       {status === "done" && report && (

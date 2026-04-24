@@ -6,15 +6,15 @@ import CitationList    from "../components/CitationList"
 import usePipeline     from "../hooks/usePipeline"
 
 const AGENTS = [
-  { id: "A1", name: "Remedy Hunter",         desc: "Finding safe remedies" },
-  { id: "A2", name: "Science Validator",     desc: "Checking safety evidence" },
-  { id: "A3", name: "Pose & Point Verifier", desc: "Strict contraindication check" },
-  { id: "A4", name: "Citation Checker",      desc: "Validating safety sources" },
-  { id: "A5", name: "Report Builder",        desc: "Building safety report" },
+  { id: "A1", name: "Remedy Hunter",     desc: "Finding safe remedies" },
+  { id: "A2", name: "Science Validator", desc: "Checking safety evidence" },
+  { id: "A4", name: "Citation Checker",  desc: "Validating safety sources" },
+  { id: "A5", name: "Report Builder",    desc: "Building safety report" },
 ]
 
 export default function SafetyCheck() {
-  const { status, agentStates, agentSummaries, report, citations, error, run } = usePipeline()
+  const { status, agentStates, agentSummaries, report, citations, 
+        error, run, fromCache, cacheMessage } = usePipeline()
   const [form, setForm] = useState({ condition: "", age: "", weight_kg: "", medications: "" })
 
   function update(k, v) { setForm(p => ({ ...p, [k]: v })) }
@@ -62,7 +62,8 @@ export default function SafetyCheck() {
               condition: form.condition,
               age: parseInt(form.age),
               weight_kg: parseFloat(form.weight_kg),
-              medications: form.medications
+              medications: form.medications,
+              feature_key: "safety_check"
             })}
           >
             Run Safety Check →
@@ -71,7 +72,13 @@ export default function SafetyCheck() {
       )}
 
       {status !== "idle" && (
-        <PipelineStepper agents={AGENTS} agentStates={agentStates} agentSummaries={agentSummaries} />
+        <PipelineStepper
+  agents={AGENTS}
+  agentStates={agentStates}
+  agentSummaries={agentSummaries}
+  fromCache={fromCache}
+  cacheMessage={cacheMessage}
+/>
       )}
       {status === "error" && <div style={styles.error}>⚠️ {error}</div>}
       {status === "done" && report && (

@@ -1,6 +1,7 @@
 // src/components/Sidebar.jsx
 import { NavLink } from "react-router-dom"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { useAuth } from "../context/AuthContext"
 
 const NAV_ITEMS = [
   { path: "/",                  label: "Wellness Search",    emoji: "🔍" },
@@ -19,36 +20,33 @@ const NAV_ITEMS = [
   { path: "/exercise-planner",  label: "Exercise Planner",  emoji: "🏋️" },
 ]
 
-export default function Sidebar({ collapsed, onToggle }) {
+// Add to Sidebar.jsx — update the component signature and add profile section
+
+export default function Sidebar({ collapsed, onToggle, user }) {
+  const { signOut } = useAuth()
+  const [isMobile, setIsMobile] = useState(() => (
+    typeof window !== "undefined" ? window.innerWidth <= 900 : false
+  ))
+
+  useEffect(() => {
+    function onResize() {
+      setIsMobile(window.innerWidth <= 900)
+    }
+    window.addEventListener("resize", onResize)
+    return () => window.removeEventListener("resize", onResize)
+  }, [])
+
+  const compact = collapsed || isMobile
+
   return (
-    <>
-      {/* Mobile overlay */}
-      {!collapsed && (
-        <div style={styles.overlay} onClick={onToggle} />
-      )}
+    <aside className="sidebar-shell" style={{ ...styles.sidebar, width: compact ? 64 : 260 }}>
 
-      <aside style={{
-        ...styles.sidebar,
-        width: collapsed ? 64 : 260,
-        minWidth: collapsed ? 64 : 260,
-      }}>
+      {/* Logo row — same as before */}
 
-        {/* Logo + toggle */}
-        <div style={styles.logoRow}>
-          {!collapsed && (
-            <div style={styles.logo}>
-              <span style={styles.logoEmoji}>🌿</span>
-              <span style={styles.logoText}>Remedy</span>
-            </div>
-          )}
-          <button style={styles.toggleBtn} onClick={onToggle}>
-            {collapsed ? "→" : "←"}
-          </button>
-        </div>
-
-        {/* Nav links */}
-        <nav style={styles.nav}>
-          {NAV_ITEMS.map(item => (
+      <nav style={styles.nav}>
+        {NAV_ITEMS.map((item, i) => {
+          const isLocked = !user && item.path !== "/"
+          return (
             <NavLink
               key={item.path}
               to={item.path}
@@ -56,125 +54,125 @@ export default function Sidebar({ collapsed, onToggle }) {
               style={({ isActive }) => ({
                 ...styles.navItem,
                 background: isActive ? "#166534" : "transparent",
-                color: isActive ? "#fff" : "#86efac",
-                justifyContent: collapsed ? "center" : "flex-start",
+                color: isActive ? "#fff" : isLocked ? "#4b7a5e" : "#86efac",
+                opacity: isLocked ? 0.6 : 1,
               })}
-              title={collapsed ? item.label : ""}
             >
               <span style={styles.navEmoji}>{item.emoji}</span>
-              {!collapsed && (
-                <span style={styles.navLabel}>{item.label}</span>
+              {!compact && (
+                <>
+                  <span style={styles.navLabel}>{item.label}</span>
+                  {isLocked && <span style={styles.lockIcon}>🔒</span>}
+                </>
               )}
             </NavLink>
-          ))}
-        </nav>
+          )
+        })}
 
-        {/* Footer */}
-        {!collapsed && (
-          <div style={styles.footer}>
-            <div style={styles.footerText}>
-              Powered by Groq + Gemini
-            </div>
-            <div style={styles.footerSub}>
-              5-Agent Validation Pipeline
-            </div>
-          </div>
+        {/* Saved Reports — only for logged in users */}
+        {user && (
+          <NavLink
+            to="/saved-reports"
+            style={({ isActive }) => ({
+              ...styles.navItem,
+              background: isActive ? "#166534" : "transparent",
+              color: isActive ? "#fff" : "#86efac",
+            })}
+          >
+            <span style={styles.navEmoji}>🔖</span>
+            {!compact && <span style={styles.navLabel}>Saved Reports</span>}
+          </NavLink>
         )}
-      </aside>
-    </>
+      </nav>
+
+      {/* User profile at bottom */}
+      <div style={styles.profileSection}>
+        {user ? (
+          <div style={styles.profile}>
+            {!compact && (
+              <div style={styles.profileInfo}>
+                <div style={styles.profileName}>
+                  {user.user_metadata?.full_name || user.email}
+                </div>
+                <div style={styles.profileEmail}>{user.email}</div>
+              </div>
+            )}
+            <button style={styles.signOutBtn} onClick={signOut} title="Sign out">
+              ↩
+            </button>
+          </div>
+        ) : (
+          !compact && (
+            <div style={styles.signInPrompt}>
+              <div style={styles.signInText}>Sign in for full access</div>
+            </div>
+          )
+        )}
+      </div>
+
+    </aside>
   )
 }
 
-const styles = {
-  overlay: {
-    position: "fixed",
-    inset: 0,
-    background: "rgba(0,0,0,0.4)",
-    zIndex: 99,
-    display: "none",
-    "@media(maxWidth:768px)": { display: "block" }
+const extraStyles = {
+  lockIcon: { marginLeft: "auto", fontSize: 11 },
+  profileSection: {
+    borderTop: "1px solid #166534",
+    padding: "12px 8px"
   },
+  profile: {
+    display: "flex", alignItems: "center",
+    gap: 10, padding: "8px"
+  },
+  profileInfo: { flex: 1, overflow: "hidden" },
+  profileName: {
+    fontSize: 13, fontWeight: 600,
+    color: "#fff", overflow: "hidden",
+    textOverflow: "ellipsis", whiteSpace: "nowrap"
+  },
+  profileEmail: {
+    fontSize: 11, color: "#4ade80",
+    overflow: "hidden", textOverflow: "ellipsis"
+  },
+  signOutBtn: {
+    background: "#166534", border: "none",
+    color: "#86efac", borderRadius: 8,
+    width: 32, height: 32, cursor: "pointer",
+    fontSize: 16
+  },
+  signInPrompt: { padding: "8px" },
+  signInText: { fontSize: 12, color: "#4ade80" }
+}
+
+const styles = {
   sidebar: {
-    height: "100vh",
-    background: "#14532d",
     display: "flex",
     flexDirection: "column",
-    position: "sticky",
-    top: 0,
-    overflowY: "auto",
-    overflowX: "hidden",
-    transition: "width 0.25s ease, min-width 0.25s ease",
-    zIndex: 100,
-    flexShrink: 0,
-  },
-  logoRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "20px 16px 12px",
-    borderBottom: "1px solid #166534",
-    minHeight: 64,
-  },
-  logo: {
-    display: "flex",
-    alignItems: "center",
-    gap: 10,
-  },
-  logoEmoji: { fontSize: 24 },
-  logoText: {
-    fontSize: 22,
-    fontWeight: 700,
+    background: "#14532d",
     color: "#fff",
-    letterSpacing: "-0.5px"
-  },
-  toggleBtn: {
-    background: "#166534",
-    border: "none",
-    color: "#86efac",
-    borderRadius: 8,
-    width: 32,
-    height: 32,
-    cursor: "pointer",
-    fontSize: 16,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    flexShrink: 0,
+    minHeight: "100vh",
+    transition: "width 0.2s ease",
+    boxShadow: "2px 0 12px rgba(0, 0, 0, 0.08)",
   },
   nav: {
-    flex: 1,
     display: "flex",
     flexDirection: "column",
-    padding: "12px 8px",
-    gap: 2,
+    gap: 6,
+    padding: 12,
+    flex: 1,
   },
   navItem: {
     display: "flex",
     alignItems: "center",
-    gap: 12,
+    gap: 10,
     padding: "10px 12px",
     borderRadius: 10,
     textDecoration: "none",
     fontSize: 14,
     fontWeight: 500,
-    transition: "all 0.15s ease",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
+    transition: "background 0.2s ease, color 0.2s ease, opacity 0.2s ease",
   },
-  navEmoji: { fontSize: 18, flexShrink: 0 },
-  navLabel: { overflow: "hidden", textOverflow: "ellipsis" },
-  footer: {
-    padding: "16px",
-    borderTop: "1px solid #166534",
-  },
-  footerText: {
-    fontSize: 11,
-    color: "#4ade80",
-    fontWeight: 600,
-  },
-  footerSub: {
-    fontSize: 10,
-    color: "#166534",
-    marginTop: 4,
-  }
+  navEmoji: { width: 20, textAlign: "center" },
+  navLabel: { flex: 1 },
+  ...extraStyles,
 }
