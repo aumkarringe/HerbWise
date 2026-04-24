@@ -46,10 +46,12 @@ app = FastAPI(title="Remedy Validation Pipeline", version="2.0.0")
 
 # ─── CORS ────────────────────────────────────────────────────────────────────
 # Add your Vercel URL here after deploying frontend
+frontend_url = os.getenv("FRONTEND_URL", "").rstrip("/")
+
 ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://localhost:3000",
-    os.getenv("https://herb-wise-theta.vercel.app/", ""),        # set this in Render env vars
+    frontend_url,
 ]
 
 app.add_middleware(

@@ -45,7 +45,7 @@ export default function WellnessSearch() {
       return
     }
 
-    run("http://localhost:8000/analyze/stream", { condition, feature_key: "wellness_search" })
+    run("/analyze/stream", { condition, feature_key: "wellness_search" })
 
     // Mark free search as used for guest
     if (!user) {
