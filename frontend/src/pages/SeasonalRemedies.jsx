@@ -24,7 +24,7 @@ function getCurrentSeason() {
 
 export default function SeasonalRemedies() {
   const { status, agentStates, agentSummaries, report, citations, 
-        error, run, fromCache, cacheMessage } = usePipeline()
+        error, warning, run, fromCache, cacheMessage } = usePipeline()
   const currentSeason = getCurrentSeason()
 
   return (
@@ -79,6 +79,7 @@ export default function SeasonalRemedies() {
   cacheMessage={cacheMessage}
 />
       )}
+      {status === "warning" && warning && <div style={styles.warning}>⚠️ {warning}</div>}
       {status === "error" && <div style={styles.error}>⚠️ {error}</div>}
       {status === "done" && report && (
         <>
@@ -111,5 +112,9 @@ const styles = {
   error: {
     background: "#fef2f2", border: "1px solid #fca5a5",
     borderRadius: 12, padding: "16px 20px", color: "#b91c1c", fontSize: 15
+  },
+  warning: {
+    background: "#fffbeb", border: "1px solid #f59e0b",
+    borderRadius: 12, padding: "16px 20px", color: "#92400e", fontSize: 15
   }
 }

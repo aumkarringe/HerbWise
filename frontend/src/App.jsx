@@ -5,7 +5,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext"
 import AuthWall  from "./components/AuthWall"
 import Sidebar   from "./components/Sidebar"
 import { hasUsedFreeSearch } from "./hooks/useGuestLimit"
-
+import LandingPage       from "./pages/LandingPage"
 import WellnessSearch   from "./pages/WellnessSearch"
 import SymptomAnalyzer  from "./pages/SymptomAnalyzer"
 import SafetyCheck      from "./pages/SafetyCheck"
@@ -25,6 +25,9 @@ import SavedReports     from "./pages/SavedReports"
 function AppInner() {
   const { user }          = useAuth()
   const location          = useLocation()
+  const pathname = location.pathname
+  const isLandingPage = pathname === "/"
+  const isPublicPath = pathname === "/" || pathname === "/wellness-search"
   const [collapsed, setCollapsed]       = useState(false)
   const [showAuthWall, setShowAuthWall] = useState(false)
   const [guestUsedFreeSearch, setGuestUsedFreeSearch] = useState(false)
@@ -42,13 +45,12 @@ function AppInner() {
 
   // Show auth wall when guest tries to access non-wellness pages
   useEffect(() => {
-    const isWellnessSearch = location.pathname === "/"
-    if (!user && !isWellnessSearch) {
+    if (!user && !isPublicPath) {
       setShowAuthWall(true)
     } else {
       setShowAuthWall(false)
     }
-  }, [location.pathname, user])
+  }, [isPublicPath, user])
 
   return (
     <div className="app-shell" style={styles.app}>
@@ -56,15 +58,21 @@ function AppInner() {
         <AuthWall />
       )}
 
-      <Sidebar
-        collapsed={collapsed}
-        onToggle={() => setCollapsed(p => !p)}
-        user={user}
-      />
+      {!isLandingPage && (
+        <Sidebar
+          collapsed={collapsed}
+          onToggle={() => setCollapsed(p => !p)}
+          user={user}
+        />
+      )}
 
-      <main className="app-main" style={styles.main}>
+      <main
+        className={isLandingPage ? "app-main landing-main" : "app-main"}
+        style={isLandingPage ? { ...styles.main, ...styles.mainLanding } : styles.main}
+      >
         <Routes>
-          <Route path="/"                   element={<WellnessSearch />} />
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/wellness-search"    element={<WellnessSearch />} />
           <Route path="/symptom-analyzer"   element={<SymptomAnalyzer />} />
           <Route path="/safety-check"       element={<SafetyCheck />} />
           <Route path="/wellness-plan"      element={<WellnessPlan />} />
@@ -97,7 +105,12 @@ const styles = {
   app: { display: "flex", minHeight: "100vh", background: "#f0fdf4" },
   main: {
     flex: 1, overflowY: "auto",
-    padding: "40px 32px", maxWidth: "100%",
+    padding: "0", maxWidth: "100%",
     fontFamily: "'Segoe UI', sans-serif"
+  },
+  mainLanding: {
+    background: "#050e08",
+    padding: "0",
+    overflowX: "hidden"
   }
 }

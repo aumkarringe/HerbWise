@@ -23,6 +23,7 @@ export default function WellnessSearch() {
   const {
     status, agentStates, agentSummaries,
     report, citations, error,
+    warning,
     fromCache, cacheMessage, run
   } = usePipeline()
 
@@ -96,6 +97,10 @@ export default function WellnessSearch() {
         <div className="ws-error" style={styles.error}>⚠️ {error}</div>
       )}
 
+      {status === "warning" && warning && (
+        <div className="ws-warning" style={styles.warning}>⚠️ {warning}</div>
+      )}
+
       {status === "done" && report && (
         <>
           {user && (
@@ -142,6 +147,14 @@ const styles = {
     borderRadius: 12,
     padding: "16px 20px",
     color: "#b91c1c",
+    fontSize: 15
+  },
+  warning: {
+    background: "#fffbeb",
+    border: "1px solid #f59e0b",
+    borderRadius: 12,
+    padding: "16px 20px",
+    color: "#92400e",
     fontSize: 15
   }
 }

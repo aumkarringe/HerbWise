@@ -50,6 +50,7 @@ export default function usePipeline() {
   const [citations, setCitations]               = useState([])
   const [extraData, setExtraData]               = useState({})
   const [error, setError]                       = useState("")
+  const [warning, setWarning]                   = useState("")
   const [detectedCondition, setDetectedCondition] = useState("")
   const [fromCache, setFromCache]               = useState(false)
   const [cacheMessage, setCacheMessage]         = useState("")
@@ -62,6 +63,7 @@ export default function usePipeline() {
     setCitations([])
     setExtraData({})
     setError("")
+    setWarning("")
     setDetectedCondition("")
     setFromCache(false)
     setCacheMessage("")
@@ -119,6 +121,18 @@ export default function usePipeline() {
             setCacheMessage(data.message || "Loaded from cache")
           }
 
+          // ── Validation warning ───────────────────────────────────────────
+          if (event === "validation_warning") {
+            setWarning(data.message || "Please review the warning below.")
+            setStatus("warning")
+          }
+
+          // ── Validation error ─────────────────────────────────────────────
+          if (event === "validation_error") {
+            setError(data.message)
+            setStatus("error")
+          }
+
           // ── Pre-processing (symptom analyzer) ────────────────────────────
           if (event === "pre_process_done") {
             setDetectedCondition(data.detected_condition)
@@ -174,6 +188,7 @@ export default function usePipeline() {
     citations,
     extraData,
     error,
+    warning,
     detectedCondition,
     fromCache,
     cacheMessage,
