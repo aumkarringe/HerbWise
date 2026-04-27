@@ -214,27 +214,49 @@ Assign evidence levels and safe_to_recommend for each item."""
     result["group"]       = group
     result["original"]    = a1_output
 
+    # Normalize model output so downstream agents don't crash on missing keys.
+    def _normalize_items(items: list) -> list:
+      normalized = []
+      for item in items or []:
+        if not isinstance(item, dict):
+          continue
+        if "safe_to_recommend" not in item:
+          item["safe_to_recommend"] = False
+        normalized.append(item)
+      return normalized
+
+    if group in ["full", "herbs_only"]:
+      result["validated_herbs"] = _normalize_items(result.get("validated_herbs", []))
+    elif group == "breathing":
+      result["validated_techniques"] = _normalize_items(result.get("validated_techniques", []))
+      result["validated_lung_herbs"] = _normalize_items(result.get("validated_lung_herbs", []))
+    elif group == "exercise":
+      result["validated_warmup"] = _normalize_items(result.get("validated_warmup", []))
+      result["validated_main_sequence"] = _normalize_items(result.get("validated_main_sequence", []))
+      result["validated_cooldown"] = _normalize_items(result.get("validated_cooldown", []))
+      result["validated_recovery_herbs"] = _normalize_items(result.get("validated_recovery_herbs", []))
+
     # Print summary
     if group == "full":
-        for herb in result.get("validated_herbs", []):
-            flag = "✓" if herb["safe_to_recommend"] else "✗"
-            print(f"  {flag} {herb['name']} — {herb['evidence_level']}")
+      for herb in result.get("validated_herbs", []):
+        flag = "✓" if herb.get("safe_to_recommend") else "✗"
+        print(f"  {flag} {herb.get('name', 'Unknown item')} — {herb.get('evidence_level', 'unknown')}")
 
     elif group == "herbs_only":
-        for herb in result.get("validated_herbs", []):
-            flag = "✓" if herb["safe_to_recommend"] else "✗"
-            print(f"  {flag} {herb['name']} — {herb['evidence_level']}")
+      for herb in result.get("validated_herbs", []):
+        flag = "✓" if herb.get("safe_to_recommend") else "✗"
+        print(f"  {flag} {herb.get('name', 'Unknown item')} — {herb.get('evidence_level', 'unknown')}")
 
     elif group == "breathing":
-        for t in result.get("validated_techniques", []):
-            flag = "✓" if t["safe_to_recommend"] else "✗"
-            print(f"  {flag} {t['name']} — {t['evidence_level']}")
+      for t in result.get("validated_techniques", []):
+        flag = "✓" if t.get("safe_to_recommend") else "✗"
+        print(f"  {flag} {t.get('name', 'Unknown item')} — {t.get('evidence_level', 'unknown')}")
 
     elif group == "exercise":
-        total = (len(result.get("validated_main_sequence", [])) +
-                 len(result.get("validated_warmup", [])) +
-                 len(result.get("validated_cooldown", [])))
-        print(f"  Validated {total} poses + "
-              f"{len(result.get('validated_recovery_herbs', []))} recovery herbs")
+      total = (len(result.get("validated_main_sequence", [])) +
+           len(result.get("validated_warmup", [])) +
+           len(result.get("validated_cooldown", [])))
+      print(f"  Validated {total} poses + "
+          f"{len(result.get('validated_recovery_herbs', []))} recovery herbs")
 
     return result

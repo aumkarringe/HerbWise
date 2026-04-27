@@ -11,6 +11,7 @@ from typing import Optional
 from dotenv import load_dotenv
 from collections import defaultdict
 from utils.cache import make_cache_key, get_cached, set_cached, is_redis_alive, get_cache_stats
+from utils.input_validator import validate_condition as _validate
 
 load_dotenv()
 
@@ -128,6 +129,46 @@ async def global_exception_handler(request: Request, exc: Exception):
 # ─── SSE Helper ───────────────────────────────────────────────────────────────
 def sse(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data)}\n\n"
+
+# ─── INPUT Validator ─────────────────────────────────────────────────
+async def validate_input(text: str) -> dict | None:
+    """
+    Returns SSE error generator if invalid, None if valid.
+    Also returns the validation result dict.
+    """
+    result = await asyncio.to_thread(_validate, text)
+    return result
+
+def validation_error_stream(result: dict):
+    """Returns an SSE stream for validation errors."""
+    async def stream():
+        if result["status"] == "emergency":
+            yield sse("emergency", {"message": result["emergency_message"]})
+        elif result["status"] in ["invalid", "vague"]:
+            yield sse("validation_error", {
+                "message": result["error_message"],
+                "status": result["status"]
+            })
+    return StreamingResponse(
+        stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache"}
+    )
+
+
+def validation_warning_stream(result: dict):
+    """Return a warning-only SSE stream for serious or sensitive input."""
+    async def stream():
+        yield sse("validation_warning", {
+            "message": result["warning_message"],
+            "status": result["status"]
+        })
+
+    return StreamingResponse(
+        stream(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
+    )
 
 
 # ─── Core Pipeline Runner ─────────────────────────────────────────────────────
@@ -406,10 +447,17 @@ def clear_feature_cache(feature_key: str):
 async def wellness_search(body: BaseInput):
     if not body.condition.strip():
         raise HTTPException(400, "Condition cannot be empty")
+    # Validate input
+    validation = await validate_input(body.condition)
+    if not validation["is_valid"]:
+        return validation_error_stream(validation)
+
     cache_key = make_cache_key(
         feature_key=body.feature_key or "wellness_search",
         condition=body.condition
     )
+    if validation["status"] in ["serious", "sensitive"]:
+        return validation_warning_stream(validation)
     return StreamingResponse(
         run_pipeline(body.condition, body.feature_key or "wellness_search",
                      cache_key=cache_key),
@@ -423,6 +471,10 @@ async def wellness_search(body: BaseInput):
 async def symptom_analyzer(body: SymptomInput):
     if not body.symptoms.strip():
         raise HTTPException(400, "Symptoms cannot be empty")
+    # Validate input
+    validation = await validate_input(body.symptoms)
+    if not validation["is_valid"]:
+        return validation_error_stream(validation)
 
     async def stream():
         yield sse("pre_process", {"message": "Analyzing your symptoms..."})
@@ -432,6 +484,9 @@ async def symptom_analyzer(body: SymptomInput):
         async for event in run_pipeline(condition, "symptom_analyzer",
                                         cache_key=cache_key):
             yield event
+
+    if validation["status"] in ["serious", "sensitive"]:
+        return validation_warning_stream(validation)
 
     return StreamingResponse(
         stream(),
@@ -443,6 +498,12 @@ async def symptom_analyzer(body: SymptomInput):
 # ── Safety Check ──────────────────────────────────────────────────────────────
 @app.post("/safety-check/stream")
 async def safety_check(body: SafetyCheckInput):
+    if not body.condition.strip():
+        raise HTTPException(400, "Condition cannot be empty")
+    validation = await validate_input(body.condition)
+    if not validation["is_valid"]:
+        return validation_error_stream(validation)
+
     enriched = (
         f"{body.condition} for a {body.age} year old "
         f"{body.weight_kg}kg patient"
@@ -453,6 +514,8 @@ async def safety_check(body: SafetyCheckInput):
         "weight_kg": body.weight_kg,
         "medications": body.medications
     })
+    if validation["status"] in ["serious", "sensitive"]:
+        return validation_warning_stream(validation)
     return StreamingResponse(
         run_pipeline(enriched, "safety_check", cache_key=cache_key),
         media_type="text/event-stream",
@@ -465,9 +528,15 @@ async def safety_check(body: SafetyCheckInput):
 async def wellness_plan(body: WellnessPlanInput):
     if not body.condition.strip():
         raise HTTPException(400, "Condition cannot be empty")
+    validation = await validate_input(body.condition)
+    if not validation["is_valid"]:
+        return validation_error_stream(validation)
+
     cache_key = make_cache_key("wellness_plan", body.condition, {
         "duration_days": body.duration_days
     })
+    if validation["status"] in ["serious", "sensitive"]:
+        return validation_warning_stream(validation)
     return StreamingResponse(
         run_pipeline(body.condition, "wellness_plan",
                      extra_data={"duration_days": body.duration_days},
@@ -482,10 +551,16 @@ async def wellness_plan(body: WellnessPlanInput):
 async def dosage_calculator(body: DosageInput):
     if not body.condition.strip():
         raise HTTPException(400, "Condition cannot be empty")
+    validation = await validate_input(body.condition)
+    if not validation["is_valid"]:
+        return validation_error_stream(validation)
+
     cache_key = make_cache_key("dosage_calculator", body.condition, {
         "age": body.age,
         "weight_kg": body.weight_kg
     })
+    if validation["status"] in ["serious", "sensitive"]:
+        return validation_warning_stream(validation)
     return StreamingResponse(
         run_pipeline(body.condition, "dosage_calculator",
                      extra_data={"age": body.age, "weight_kg": body.weight_kg},
@@ -500,9 +575,15 @@ async def dosage_calculator(body: DosageInput):
 async def preparation_guide(body: PreparationInput):
     if not body.condition.strip():
         raise HTTPException(400, "Condition cannot be empty")
+    validation = await validate_input(body.condition)
+    if not validation["is_valid"]:
+        return validation_error_stream(validation)
+
     cache_key = make_cache_key("preparation_guide", body.condition, {
         "herb_name": body.herb_name
     })
+    if validation["status"] in ["serious", "sensitive"]:
+        return validation_warning_stream(validation)
     return StreamingResponse(
         run_pipeline(body.condition, "preparation_guide",
                      extra_data={"herb_name": body.herb_name},
@@ -539,7 +620,13 @@ async def seasonal_remedies(body: SeasonalInput):
 async def natural_beauty(body: NaturalBeautyInput):
     if not body.beauty_concern.strip():
         raise HTTPException(400, "Beauty concern cannot be empty")
+    validation = await validate_input(body.beauty_concern)
+    if not validation["is_valid"]:
+        return validation_error_stream(validation)
+
     cache_key = make_cache_key("natural_beauty", body.beauty_concern)
+    if validation["status"] in ["serious", "sensitive"]:
+        return validation_warning_stream(validation)
     return StreamingResponse(
         run_pipeline(body.beauty_concern, "natural_beauty", cache_key=cache_key),
         media_type="text/event-stream",
@@ -600,7 +687,13 @@ async def breathing_test():
 async def home_remedies(body: BaseInput):
     if not body.condition.strip():
         raise HTTPException(400, "Condition cannot be empty")
+    validation = await validate_input(body.condition)
+    if not validation["is_valid"]:
+        return validation_error_stream(validation)
+
     cache_key = make_cache_key("home_remedies_plus", body.condition)
+    if validation["status"] in ["serious", "sensitive"]:
+        return validation_warning_stream(validation)
     return StreamingResponse(
         run_pipeline(body.condition, "home_remedies_plus", cache_key=cache_key),
         media_type="text/event-stream",
@@ -613,10 +706,16 @@ async def home_remedies(body: BaseInput):
 async def exercise_planner(body: ExercisePlannerInput):
     if not body.condition.strip():
         raise HTTPException(400, "Condition cannot be empty")
+    validation = await validate_input(body.condition)
+    if not validation["is_valid"]:
+        return validation_error_stream(validation)
+
     condition = f"{body.condition} — fitness level: {body.fitness_level}"
     cache_key = make_cache_key("exercise_planner", body.condition, {
         "fitness_level": body.fitness_level
     })
+    if validation["status"] in ["serious", "sensitive"]:
+        return validation_warning_stream(validation)
     return StreamingResponse(
         run_pipeline(condition, "exercise_planner",
                      extra_data={"fitness_level": body.fitness_level},

@@ -157,19 +157,19 @@ def run(a2_output: dict, feature_key: str = "wellness_search") -> dict:
         warmup_detail = "\n".join([
             f"- {p['name']} ({p.get('sanskrit_name','')}) — {p.get('alignment_cues','')}"
             for p in original.get("warmup_poses", [])
-            if any(v["name"] == p["name"] and v["safe_to_recommend"]
+          if any(v.get("name") == p.get("name") and v.get("safe_to_recommend")
                    for v in a2_output.get("validated_warmup", []))
         ])
         main_detail = "\n".join([
             f"- {p['name']} ({p.get('sanskrit_name','')}) — {p.get('alignment_cues','')}"
             for p in original.get("main_sequence_poses", [])
-            if any(v["name"] == p["name"] and v["safe_to_recommend"]
+          if any(v.get("name") == p.get("name") and v.get("safe_to_recommend")
                    for v in a2_output.get("validated_main_sequence", []))
         ])
         cool_detail = "\n".join([
             f"- {p['name']} ({p.get('sanskrit_name','')}) — {p.get('alignment_cues','')}"
             for p in original.get("cooldown_poses", [])
-            if any(v["name"] == p["name"] and v["safe_to_recommend"]
+          if any(v.get("name") == p.get("name") and v.get("safe_to_recommend")
                    for v in a2_output.get("validated_cooldown", []))
         ])
 
@@ -210,19 +210,19 @@ Check sequence flow, contraindications, and add beginner/advanced variations."""
 
     safe_poses = [
         p for p in a2_output.get("validated_yoga_poses", [])
-        if p["safe_to_recommend"]
+        if p.get("safe_to_recommend")
     ]
     safe_points = [
         a for a in a2_output.get("validated_acupressure_points", [])
-        if a["safe_to_recommend"]
+        if a.get("safe_to_recommend")
     ]
 
     poses_detail = ""
     for p in safe_poses:
         orig = next((op for op in original.get("yoga_poses", [])
-                     if op["name"] == p["name"]), {})
+                     if op.get("name") == p.get("name")), {})
         poses_detail += f"""
-- {p['name']} ({orig.get('sanskrit_name','N/A')})
+- {p.get('name','Unknown pose')} ({orig.get('sanskrit_name','N/A')})
   Alignment: {orig.get('alignment_cues','N/A')}
   Duration: {orig.get('duration','N/A')}
 """
@@ -230,9 +230,9 @@ Check sequence flow, contraindications, and add beginner/advanced variations."""
     points_detail = ""
     for a in safe_points:
         orig = next((op for op in original.get("acupressure_points", [])
-                     if op.get("point_name") == a["point_name"]), {})
+                     if op.get("point_name") == a.get("point_name")), {})
         points_detail += f"""
-- {a['point_name']}
+- {a.get('point_name','Unknown point')}
   Location: {orig.get('location_description','N/A')}
   Technique: {orig.get('pressure_technique','N/A')}
   Duration: {orig.get('duration','N/A')}
