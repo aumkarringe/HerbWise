@@ -67,7 +67,7 @@ export default function WellnessSearch() {
       <div className="ws-header" style={styles.header}>
         <h1 className="ws-title" style={styles.title}>🔍 Wellness Search</h1>
         <p className="ws-subtitle" style={styles.subtitle}>
-          Search any condition — get evidence-validated herbs, yoga & acupressure
+          Search any condition, get evidence-validated herbs, yoga & acupressure
         </p>
         {!user && !guestBlocked && (
           <div className="ws-guest-notice" style={styles.guestNotice}>

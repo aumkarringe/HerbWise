@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sign in to HerbWise</title>
+</head>
+<body style="margin:0;padding:0;background-color:#030a05;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;">
+
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#030a05;padding:40px 16px;">
+    <tr>
+      <td align="center">
+
+        <!-- Card -->
+        <table width="540" cellpadding="0" cellspacing="0" border="0" style="max-width:540px;width:100%;border-radius:20px;overflow:hidden;border:1px solid #1a3d22;">
+
+          <!-- Top glow bar -->
+          <tr>
+            <td style="background:linear-gradient(90deg,#16a34a,#4ade80,#16a34a);height:3px;font-size:0;line-height:0;">&nbsp;</td>
+          </tr>
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color:#050e08;padding:36px 40px 28px 40px;text-align:center;border-bottom:1px solid #1a3d22;">
+
+              <!-- Logo circle -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" style="padding-bottom:14px;">
+                    <table cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="background-color:#0a1a0e;border:1.5px solid #1e4d28;border-radius:50%;width:68px;height:68px;text-align:center;vertical-align:middle;font-size:30px;">
+                          🌿
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center">
+                    <span style="font-size:28px;font-weight:800;color:#4ade80;letter-spacing:-0.5px;">HerbWise</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" style="padding-top:5px;">
+                    <span style="font-size:11px;color:#3a6b44;letter-spacing:2.5px;text-transform:uppercase;font-weight:600;">Natural Wellness Intelligence</span>
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="background-color:#060f08;padding:36px 40px 28px 40px;">
+
+              <p style="margin:0 0 6px 0;font-size:23px;font-weight:700;color:#f0faf0;line-height:1.3;">
+                Your magic link is ready ✨
+              </p>
+              <p style="margin:0 0 32px 0;font-size:15px;color:rgba(232,245,232,0.55);line-height:1.7;">
+                Click the button below to sign in instantly — no password needed. This link expires in <span style="color:#4ade80;font-weight:600;">1 hour</span> and works only once.
+              </p>
+
+              <!-- CTA Button -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:32px;">
+                <tr>
+                  <td align="center">
+                    <a href="{{ .ConfirmationURL }}"
+                       style="display:inline-block;background:#4ade80;color:#050e08;text-decoration:none;font-size:16px;font-weight:800;padding:16px 48px;border-radius:12px;letter-spacing:0.2px;">
+                      Sign in to HerbWise →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Divider -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+                <tr>
+                  <td style="border-top:1px solid #1a3d22;">&nbsp;</td>
+                </tr>
+              </table>
+
+              <!-- Fallback link -->
+              <p style="margin:0 0 6px 0;font-size:12px;color:rgba(232,245,232,0.35);">
+                Button not working? Paste this link in your browser:
+              </p>
+              <p style="margin:0;font-size:12px;color:#4ade80;word-break:break-all;line-height:1.6;">
+                {{ .ConfirmationURL }}
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Features strip -->
+          <tr>
+            <td style="background-color:#050e08;border-top:1px solid #1a3d22;border-bottom:1px solid #1a3d22;padding:20px 40px;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" width="33%" style="padding:8px 6px;font-size:11px;color:rgba(232,245,232,0.45);text-align:center;">
+                    <div style="font-size:18px;margin-bottom:5px;">🌿</div>
+                    Herbal Remedies
+                  </td>
+                  <td align="center" width="33%" style="padding:8px 6px;font-size:11px;color:rgba(232,245,232,0.45);text-align:center;border-left:1px solid #1a3d22;border-right:1px solid #1a3d22;">
+                    <div style="font-size:18px;margin-bottom:5px;">🧘</div>
+                    Yoga & Acupressure
+                  </td>
+                  <td align="center" width="33%" style="padding:8px 6px;font-size:11px;color:rgba(232,245,232,0.45);text-align:center;">
+                    <div style="font-size:18px;margin-bottom:5px;">🔬</div>
+                    Science-Backed
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Security notice -->
+          <tr>
+            <td style="background-color:#060f08;padding:20px 40px;">
+              <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="background-color:#0a1a0e;border:1px solid #1a3d22;border-left:3px solid #4ade80;border-radius:8px;padding:12px 16px;">
+                    <p style="margin:0;font-size:12px;color:rgba(232,245,232,0.45);line-height:1.6;">
+                      <strong style="color:rgba(232,245,232,0.65);">Didn't request this?</strong> Safely ignore this email — no account was created and nothing has changed.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#050e08;padding:16px 40px 28px 40px;text-align:center;border-top:1px solid #1a3d22;">
+              <p style="margin:0;font-size:11px;color:#2a5235;line-height:1.8;letter-spacing:0.2px;">
+                © 2025 HerbWise &nbsp;·&nbsp; Natural Wellness Intelligence<br/>
+                This is an automated message — please do not reply.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Bottom glow bar -->
+          <tr>
+            <td style="background:linear-gradient(90deg,#16a34a,#4ade80,#16a34a);height:2px;font-size:0;line-height:0;">&nbsp;</td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
