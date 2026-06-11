@@ -96,13 +96,13 @@ export default function DosageCalculator() {
               </thead>
               <tbody>
                 {extraData.dosage.dosage_table?.map((d, i) => (
-                  <tr key={i} style={{ background: i % 2 === 0 ? "#f8fafc" : "#fff" }}>
+                  <tr key={i} style={{ background: i % 2 === 0 ? "rgba(10,26,14,0.6)" : "rgba(5,14,8,0.4)" }}>
                     <td style={styles.td}><strong>{d.herb_name}</strong></td>
                     <td style={styles.td}>{d.personalized_dose}</td>
                     <td style={styles.td}>{d.max_daily_dose}</td>
                     <td style={styles.td}>{d.timing}</td>
                     <td style={styles.td}>{d.form}</td>
-                    <td style={{ ...styles.td, color: "#b45309" }}>{d.warnings || "—"}</td>
+                    <td style={{ ...styles.td, color: "#fbbf24" }}>{d.warnings || "—"}</td>
                   </tr>
                 ))}
               </tbody>
@@ -127,54 +127,52 @@ export default function DosageCalculator() {
 }
 
 const styles = {
-  container: { display: "flex", flexDirection: "column", gap: 28, maxWidth: 860, margin: "0 auto" },
+  container: { display: "flex", flexDirection: "column", gap: 24, maxWidth: 860, margin: "0 auto" },
   header: { textAlign: "center" },
   icon: { fontSize: 52, marginBottom: 8 },
-  title: { fontSize: 32, color: "#14532d", margin: 0 },
-  subtitle: { color: "#4b7a5e", marginTop: 8, fontSize: 15 },
+  title: { fontSize: 32, color: "#f0faf0", margin: 0, fontWeight: 800 },
+  subtitle: { color: "rgba(232,245,232,0.55)", marginTop: 8, fontSize: 15 },
   card: {
-    background: "#fff", border: "1px solid #dcfce7",
+    background: "rgba(10,26,14,0.8)", backdropFilter: "blur(12px)",
+    border: "1px solid rgba(74,222,128,0.2)",
     borderRadius: 16, padding: 28,
     display: "flex", flexDirection: "column", gap: 20
   },
   formRow: { display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 16 },
   field: { display: "flex", flexDirection: "column", gap: 6 },
-  label: { fontSize: 13, fontWeight: 600, color: "#374151" },
+  label: { fontSize: 13, fontWeight: 600, color: "rgba(232,245,232,0.7)" },
   input: {
     padding: "11px 14px", borderRadius: 10, fontSize: 14,
-    border: "1.5px solid #bbf7d0", outline: "none", color: "#14532d"
+    border: "1.5px solid rgba(74,222,128,0.3)", outline: "none",
+    background: "rgba(5,14,8,0.8)", color: "#e8f5e8"
   },
   btn: {
-    background: "#16a34a", color: "#fff", border: "none",
+    background: "#4ade80", color: "#050e08", border: "none",
     borderRadius: 12, padding: "14px", fontSize: 15,
-    fontWeight: 600, cursor: "pointer"
+    fontWeight: 700, cursor: "pointer"
   },
   dosageCard: {
-    background: "#fff", border: "1px solid #dcfce7",
+    background: "rgba(10,26,14,0.8)", backdropFilter: "blur(12px)",
+    border: "1px solid rgba(74,222,128,0.2)",
     borderRadius: 16, padding: 28,
     display: "flex", flexDirection: "column", gap: 16
   },
-  sectionTitle: { fontSize: 20, color: "#14532d", margin: 0 },
-  profile: { fontSize: 13, color: "#6b7280" },
+  sectionTitle: { fontSize: 18, color: "#f0faf0", margin: 0, fontWeight: 700 },
+  profile: { fontSize: 13, color: "rgba(232,245,232,0.45)" },
   tableWrap: { overflowX: "auto" },
   table: { width: "100%", borderCollapse: "collapse", fontSize: 13 },
   th: {
-    background: "#f0fdf4", padding: "10px 12px",
-    textAlign: "left", color: "#14532d",
-    fontWeight: 600, borderBottom: "2px solid #dcfce7"
+    background: "rgba(74,222,128,0.07)", padding: "10px 12px",
+    textAlign: "left", color: "#4ade80",
+    fontWeight: 600, borderBottom: "1.5px solid rgba(74,222,128,0.2)"
   },
-  td: { padding: "10px 12px", borderBottom: "1px solid #f1f5f9", color: "#374151" },
-  warning: {
-    background: "#fff7ed", border: "1px solid #fed7aa",
-    borderRadius: 10, padding: "12px 16px",
-    fontSize: 13, color: "#9a3412"
-  },
+  td: { padding: "10px 12px", borderBottom: "1px solid rgba(255,255,255,0.05)", color: "rgba(232,245,232,0.75)" },
   error: {
-    background: "#fef2f2", border: "1px solid #fca5a5",
-    borderRadius: 12, padding: "16px 20px", color: "#b91c1c", fontSize: 15
+    background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.3)",
+    borderRadius: 12, padding: "16px 20px", color: "#fca5a5", fontSize: 15
   },
   warning: {
-    background: "#fffbeb", border: "1px solid #f59e0b",
-    borderRadius: 12, padding: "16px 20px", color: "#92400e", fontSize: 15
+    background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)",
+    borderRadius: 12, padding: "16px 20px", color: "#fbbf24", fontSize: 15
   }
 }

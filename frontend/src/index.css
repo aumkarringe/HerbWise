@@ -5,6 +5,55 @@
   box-sizing: border-box;
 }
 
+/* ── CSS Design Tokens ─────────────────────────────────────────────────────── */
+:root, [data-theme="dark"] {
+  --bg:            #050e08;
+  --bg-secondary:  #0a1a0e;
+  --bg-card:       rgba(10,26,14,0.8);
+  --bg-card-inner: rgba(5,14,8,0.7);
+  --bg-input:      rgba(5,14,8,0.8);
+  --accent:        #4ade80;
+  --accent-on:     #050e08;
+  --accent-subtle: rgba(74,222,128,0.1);
+  --text:          #e8f5e8;
+  --text-heading:  #f0faf0;
+  --text-muted:    rgba(232,245,232,0.55);
+  --text-faint:    rgba(232,245,232,0.35);
+  --border:        rgba(74,222,128,0.2);
+  --border-subtle: rgba(74,222,128,0.1);
+  --sidebar-bg:    rgba(5,14,8,0.98);
+  --warning-bg:    rgba(245,158,11,0.08);
+  --warning-border:rgba(245,158,11,0.25);
+  --warning-text:  #fbbf24;
+  --error-bg:      rgba(220,38,38,0.1);
+  --error-border:  rgba(220,38,38,0.3);
+  --error-text:    #fca5a5;
+}
+
+[data-theme="light"] {
+  --bg:            #f0fdf4;
+  --bg-secondary:  #dcfce7;
+  --bg-card:       rgba(255,255,255,0.92);
+  --bg-card-inner: rgba(240,253,244,0.85);
+  --bg-input:      #ffffff;
+  --accent:        #16a34a;
+  --accent-on:     #ffffff;
+  --accent-subtle: rgba(22,163,74,0.08);
+  --text:          #1a3a1f;
+  --text-heading:  #0f2b13;
+  --text-muted:    rgba(15,43,19,0.6);
+  --text-faint:    rgba(15,43,19,0.35);
+  --border:        rgba(22,163,74,0.25);
+  --border-subtle: rgba(22,163,74,0.15);
+  --sidebar-bg:    rgba(240,253,244,0.98);
+  --warning-bg:    rgba(217,119,6,0.06);
+  --warning-border:rgba(217,119,6,0.2);
+  --warning-text:  #92400e;
+  --error-bg:      rgba(220,38,38,0.06);
+  --error-border:  rgba(220,38,38,0.2);
+  --error-text:    #b91c1c;
+}
+
 html,
 body,
 #root {
@@ -17,10 +66,11 @@ html {
 }
 
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-  background: #f0fdf4;
-  color: #1e293b;
+  font-family: 'DM Sans', 'Outfit', system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
   overflow-x: hidden;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .landing-main {
@@ -29,179 +79,105 @@ body {
   width: 100%;
   max-width: 100%;
   overflow-x: hidden;
-  background: #050e08;
+  background: var(--bg);
 }
 
-::-webkit-scrollbar {
-  width: 6px;
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-secondary); }
+::-webkit-scrollbar-thumb { background: rgba(74,222,128,0.3); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(74,222,128,0.5); }
+
+/* ── Light theme overrides for classname-bearing elements ─────────────────── */
+[data-theme="light"] .report-section {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+  box-shadow: 0 2px 16px rgba(22,163,74,0.08);
 }
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
+[data-theme="light"] .report-card {
+  background: var(--bg-card-inner) !important;
+  border-color: var(--border-subtle) !important;
 }
-::-webkit-scrollbar-thumb {
-  background: #86efac;
-  border-radius: 3px;
+[data-theme="light"] .report-wrapper {
+  color: var(--text) !important;
+}
+[data-theme="light"] .report-section-title {
+  color: var(--text-heading) !important;
+}
+[data-theme="light"] .report-grid {
+  color: var(--text-muted) !important;
+}
+[data-theme="light"] .report-safety-box {
+  background: var(--warning-bg) !important;
+  border-color: var(--warning-border) !important;
+}
+[data-theme="light"] .report-table-row {
+  border-color: var(--border-subtle) !important;
+}
+[data-theme="light"] .report-table-header {
+  background: var(--accent-subtle) !important;
+}
+[data-theme="light"] .report-table-cell {
+  color: var(--text-muted) !important;
+}
+[data-theme="light"] .citations-wrapper {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+}
+[data-theme="light"] .citation-item {
+  border-color: var(--border-subtle) !important;
+}
+[data-theme="light"] .pipeline-wrapper {
+  background: var(--bg-card) !important;
+  border-color: var(--border) !important;
+}
+[data-theme="light"] .pipeline-card {
+  background: var(--bg-card-inner) !important;
+  border-color: var(--border-subtle) !important;
+}
+[data-theme="light"] .save-report-btn {
+  background: var(--accent-subtle) !important;
+  border-color: var(--border) !important;
+  color: var(--accent) !important;
 }
 
-/* Smooth page transitions */
-.page-enter {
-  opacity: 0;
-  transform: translateY(8px);
-}
-.page-enter-active {
-  opacity: 1;
-  transform: translateY(0);
-  transition: all 0.2s ease;
-}
+/* ── GSAP animation base states ─────────────────────────────────────────────── */
+.hw-gsap-hidden { opacity: 0; }
+.hw-scroll-reveal { will-change: transform, opacity; }
 
-/* Mobile responsiveness for app layout and shared feature components */
+/* ── Smooth page transitions ─────────────────────────────────────────────── */
+.page-enter { opacity: 0; transform: translateY(8px); }
+.page-enter-active { opacity: 1; transform: translateY(0); transition: all 0.2s ease; }
+
+/* ── Mobile responsiveness ──────────────────────────────────────────────── */
 @media (max-width: 900px) {
-  .app-main {
-    padding: 16px 12px !important;
-  }
-
-  .ws-container {
-    gap: 16px !important;
-    max-width: 100% !important;
-  }
-
-  .ws-title {
-    font-size: 26px !important;
-    line-height: 1.2 !important;
-  }
-
-  .ws-subtitle {
-    font-size: 14px !important;
-    line-height: 1.45 !important;
-  }
-
-  .searchbar-form {
-    flex-direction: column !important;
-    gap: 10px !important;
-  }
-
-  .searchbar-input,
-  .searchbar-button {
-    width: 100% !important;
-  }
-
-  .searchbar-button {
-    padding: 12px 14px !important;
-    font-size: 15px !important;
-  }
-
-  .pipeline-wrapper {
-    padding: 14px 12px !important;
-    border-radius: 12px !important;
-  }
-
-  .pipeline-heading {
-    margin-bottom: 12px !important;
-  }
-
-  .pipeline-card {
-    padding: 12px !important;
-  }
-
-  .pipeline-card-top {
-    gap: 10px !important;
-  }
-
-  .pipeline-agent-desc {
-    line-height: 1.35 !important;
-  }
-
-  .pipeline-badges {
-    gap: 6px !important;
-  }
-
-  .report-wrapper {
-    gap: 16px !important;
-  }
-
-  .report-section {
-    padding: 14px 12px !important;
-    border-radius: 12px !important;
-  }
-
-  .report-section-title {
-    font-size: 18px !important;
-  }
-
-  .report-card {
-    padding: 12px !important;
-  }
-
-  .report-card-header {
-    flex-wrap: wrap !important;
-    row-gap: 6px !important;
-  }
-
-  .report-grid {
-    font-size: 13px !important;
-    line-height: 1.5 !important;
-    overflow-wrap: anywhere !important;
-  }
-
-  .report-table {
-    border: none !important;
-    border-radius: 0 !important;
-    overflow: visible !important;
-  }
-
-  .report-table-header {
-    display: none !important;
-  }
-
-  .report-table-row {
-    display: flex !important;
-    flex-direction: column !important;
-    gap: 8px !important;
-    border: 1px solid #e2e8f0 !important;
-    border-radius: 10px !important;
-    margin-bottom: 10px !important;
-    padding: 10px !important;
-    min-height: 0 !important;
-  }
-
-  .report-table-cell {
-    padding: 0 !important;
-  }
-
-  .report-safety-box {
-    padding: 14px 12px !important;
-    border-radius: 12px !important;
-  }
-
-  .save-report-wrapper {
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 8px !important;
-  }
-
-  .save-report-btn,
-  .save-report-saved {
-    width: 100% !important;
-    text-align: center !important;
-  }
-
-  .citations-wrapper {
-    padding: 14px 12px !important;
-    border-radius: 12px !important;
-  }
-
-  .citation-item {
-    gap: 8px !important;
-  }
-
-  .citation-link-row {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    gap: 6px !important;
-  }
-
-  .citation-link,
-  .citation-doi-link {
-    font-size: 12px !important;
-  }
+  .app-main { padding: 16px 12px !important; }
+  .ws-container { gap: 16px !important; max-width: 100% !important; }
+  .ws-title { font-size: 26px !important; line-height: 1.2 !important; }
+  .ws-subtitle { font-size: 14px !important; line-height: 1.45 !important; }
+  .searchbar-form { flex-direction: column !important; gap: 10px !important; }
+  .searchbar-input, .searchbar-button { width: 100% !important; }
+  .searchbar-button { padding: 12px 14px !important; font-size: 15px !important; }
+  .pipeline-wrapper { padding: 14px 12px !important; border-radius: 12px !important; }
+  .pipeline-heading { margin-bottom: 12px !important; }
+  .pipeline-card { padding: 12px !important; }
+  .pipeline-card-top { gap: 10px !important; }
+  .pipeline-agent-desc { line-height: 1.35 !important; }
+  .pipeline-badges { gap: 6px !important; }
+  .report-wrapper { gap: 16px !important; }
+  .report-section { padding: 14px 12px !important; border-radius: 12px !important; }
+  .report-section-title { font-size: 18px !important; }
+  .report-card { padding: 12px !important; }
+  .report-card-header { flex-wrap: wrap !important; row-gap: 6px !important; }
+  .report-grid { font-size: 13px !important; line-height: 1.5 !important; overflow-wrap: anywhere !important; }
+  .report-table { border: none !important; border-radius: 0 !important; overflow: visible !important; }
+  .report-table-header { display: none !important; }
+  .report-table-row { display: flex !important; flex-direction: column !important; gap: 8px !important; border: 1px solid rgba(74,222,128,0.15) !important; border-radius: 10px !important; margin-bottom: 10px !important; padding: 10px !important; min-height: 0 !important; }
+  .report-table-cell { padding: 0 !important; }
+  .report-safety-box { padding: 14px 12px !important; border-radius: 12px !important; }
+  .save-report-wrapper { flex-direction: column !important; align-items: stretch !important; gap: 8px !important; }
+  .save-report-btn, .save-report-saved { width: 100% !important; text-align: center !important; }
+  .citations-wrapper { padding: 14px 12px !important; border-radius: 12px !important; }
+  .citation-item { gap: 8px !important; }
+  .citation-link-row { flex-direction: column !important; align-items: flex-start !important; gap: 6px !important; }
+  .citation-link, .citation-doi-link { font-size: 12px !important; }
 }

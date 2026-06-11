@@ -124,37 +124,37 @@ const styles = {
   container: {
     display: "flex",
     flexDirection: "column",
-    gap: 28,
+    gap: 24,
     maxWidth: 860,
     margin: "0 auto",
   },
-  header: { textAlign: "center" },
-  title: { fontSize: 32, color: "#14532d", margin: 0 },
-  subtitle: { color: "#4b7a5e", marginTop: 8, fontSize: 15 },
+  header: { textAlign: "center", paddingBottom: 8 },
+  title: { fontSize: 34, color: "#f0faf0", margin: 0, fontWeight: 800, letterSpacing: "-0.5px" },
+  subtitle: { color: "rgba(232,245,232,0.55)", marginTop: 8, fontSize: 15 },
   guestNotice: {
     marginTop: 10,
     display: "inline-block",
-    background: "#f0fdf4",
-    border: "1px solid #86efac",
+    background: "rgba(74,222,128,0.08)",
+    border: "1px solid rgba(74,222,128,0.25)",
     borderRadius: 20,
     padding: "6px 16px",
     fontSize: 13,
-    color: "#166534"
+    color: "#4ade80"
   },
   error: {
-    background: "#fef2f2",
-    border: "1px solid #fca5a5",
+    background: "rgba(220,38,38,0.1)",
+    border: "1px solid rgba(220,38,38,0.3)",
     borderRadius: 12,
     padding: "16px 20px",
-    color: "#b91c1c",
+    color: "#fca5a5",
     fontSize: 15
   },
   warning: {
-    background: "#fffbeb",
-    border: "1px solid #f59e0b",
+    background: "rgba(245,158,11,0.08)",
+    border: "1px solid rgba(245,158,11,0.25)",
     borderRadius: 12,
     padding: "16px 20px",
-    color: "#92400e",
+    color: "#fbbf24",
     fontSize: 15
   }
 }

@@ -143,11 +143,38 @@ STRICT RULES:
 def _build_items_text(a1_output: dict, group: str) -> str:
     """Build a text summary of A1 items to validate based on group."""
     if group == "full":
-        herbs  = "\n".join([f"- {h['name']}: {h.get('traditional_claim','')}"
+        def herb_name(h):
+            return h.get("name") or h.get("ingredient", "Unknown")
+
+        def herb_claim(h):
+            parts = [h.get("traditional_claim", "")]
+            for k in ("sleep_mechanism", "stress_mechanism", "immune_mechanism",
+                      "type", "skin_hair_benefit", "recipe_name"):
+                if h.get(k):
+                    parts.append(f"{k}: {h[k]}")
+            return " | ".join(p for p in parts if p)
+
+        def pose_claim(p):
+            parts = [p.get("traditional_claim", "")]
+            for k in ("sleep_benefit", "lymphatic_benefit", "nervous_system_effect",
+                      "beauty_benefit", "practice_time"):
+                if p.get(k):
+                    parts.append(f"{k}: {p[k]}")
+            return " | ".join(p for p in parts if p)
+
+        def point_claim(a):
+            parts = [a.get("traditional_claim", "")]
+            for k in ("sleep_benefit", "cortisol_effect", "immune_benefit",
+                      "face_location"):
+                if a.get(k):
+                    parts.append(f"{k}: {a[k]}")
+            return " | ".join(p for p in parts if p)
+
+        herbs  = "\n".join([f"- {herb_name(h)}: {herb_claim(h)}"
                             for h in a1_output.get("herbs", [])])
-        poses  = "\n".join([f"- {p['name']}: {p.get('traditional_claim','')}"
+        poses  = "\n".join([f"- {p['name']}: {pose_claim(p)}"
                             for p in a1_output.get("yoga_poses", [])])
-        points = "\n".join([f"- {a['point_name']}: {a.get('traditional_claim','')}"
+        points = "\n".join([f"- {a['point_name']}: {point_claim(a)}"
                             for a in a1_output.get("acupressure_points", [])])
         return f"HERBS:\n{herbs}\n\nYOGA POSES:\n{poses}\n\nACUPRESSURE POINTS:\n{points}"
 

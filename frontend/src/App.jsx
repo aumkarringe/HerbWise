@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react"
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom"
 import { AuthProvider, useAuth } from "./context/AuthContext"
+import { ThemeProvider } from "./context/ThemeContext"
 import AuthWall  from "./components/AuthWall"
 import Sidebar   from "./components/Sidebar"
 import { hasUsedFreeSearch } from "./hooks/useGuestLimit"
@@ -18,32 +19,19 @@ import SleepOptimizer   from "./pages/SleepOptimizer"
 import StressRelief     from "./pages/StressRelief"
 import ImmunityBooster  from "./pages/ImmunityBooster"
 import BreathingTest    from "./pages/BreathingTest"
-import HomeRemediesPlus from "./pages/HomeRemediesPlus"
 import ExercisePlanner  from "./pages/ExercisePlanner"
 import SavedReports     from "./pages/SavedReports"
 
 function AppInner() {
   const { user }          = useAuth()
   const location          = useLocation()
+  const navigate          = useNavigate()
   const pathname = location.pathname
   const isLandingPage = pathname === "/"
   const isPublicPath = pathname === "/" || pathname === "/wellness-search"
   const [collapsed, setCollapsed]       = useState(false)
   const [showAuthWall, setShowAuthWall] = useState(false)
-  const [guestUsedFreeSearch, setGuestUsedFreeSearch] = useState(false)
 
-  // Check if guest has used their free search
-  useEffect(() => {
-    if (!user) {
-      hasUsedFreeSearch().then(used => {
-        setGuestUsedFreeSearch(used)
-      })
-    } else {
-      setGuestUsedFreeSearch(false)
-    }
-  }, [user])
-
-  // Show auth wall when guest tries to access non-wellness pages
   useEffect(() => {
     if (!user && !isPublicPath) {
       setShowAuthWall(true)
@@ -52,10 +40,13 @@ function AppInner() {
     }
   }, [isPublicPath, user])
 
+  const bg  = "#050e08"
+  const txt = "#e8f5e8"
+
   return (
-    <div className="app-shell" style={styles.app}>
+    <div className="app-shell" style={{ display: "flex", minHeight: "100vh", background: bg, color: txt, transition: "background 0.3s ease" }}>
       {showAuthWall && (
-        <AuthWall />
+        <AuthWall onClose={() => { setShowAuthWall(false); navigate("/") }} />
       )}
 
       {!isLandingPage && (
@@ -68,7 +59,10 @@ function AppInner() {
 
       <main
         className={isLandingPage ? "app-main landing-main" : "app-main"}
-        style={isLandingPage ? { ...styles.main, ...styles.mainLanding } : styles.main}
+        style={isLandingPage
+          ? { flex: 1, background: bg, padding: "0", overflowX: "hidden", maxWidth: "100%" }
+          : { flex: 1, overflowY: "auto", padding: "32px 28px", maxWidth: "100%", fontFamily: "'DM Sans', 'Outfit', system-ui, sans-serif", background: bg, color: txt }
+        }
       >
         <Routes>
           <Route path="/" element={<LandingPage />} />
@@ -84,7 +78,6 @@ function AppInner() {
           <Route path="/stress-relief"      element={<StressRelief />} />
           <Route path="/immunity-booster"   element={<ImmunityBooster />} />
           <Route path="/breathing-test"     element={<BreathingTest />} />
-          <Route path="/home-remedies"      element={<HomeRemediesPlus />} />
           <Route path="/exercise-planner"   element={<ExercisePlanner />} />
           <Route path="/saved-reports"      element={<SavedReports />} />
         </Routes>
@@ -95,22 +88,10 @@ function AppInner() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppInner />
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AppInner />
+      </AuthProvider>
+    </ThemeProvider>
   )
-}
-
-const styles = {
-  app: { display: "flex", minHeight: "100vh", background: "#f0fdf4" },
-  main: {
-    flex: 1, overflowY: "auto",
-    padding: "0", maxWidth: "100%",
-    fontFamily: "'Segoe UI', sans-serif"
-  },
-  mainLanding: {
-    background: "#050e08",
-    padding: "0",
-    overflowX: "hidden"
-  }
 }

@@ -5,11 +5,76 @@ import { useAuth }    from "../context/AuthContext"
 import ReportView     from "../components/ReportView"
 import CitationList   from "../components/CitationList"
 
+async function downloadReportPdf(r) {
+  const element = document.getElementById(`report-pdf-${r.id}`)
+  if (!element) return
+
+  const { default: html2pdf } = await import("html2pdf.js")
+
+  const filename = `${r.condition.replace(/\s+/g, "_")}_${r.feature_key}_herbwise.pdf`
+
+  await html2pdf()
+    .set({
+      margin: 0,
+      filename,
+      image: { type: "jpeg", quality: 0.97 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: "#050e08",
+        logging: false,
+        // onclone fires on html2canvas's own internal clone — the element is fully
+        // visible inside a hidden iframe at this point, so styles apply correctly
+        onclone: (clonedDoc) => {
+          // Remove backdrop-filter from every element (renders as white bar in html2canvas)
+          clonedDoc.querySelectorAll("*").forEach(el => {
+            el.style.backdropFilter = "none"
+            el.style.webkitBackdropFilter = "none"
+          })
+          // Replace semi-transparent rgba backgrounds with solid equivalents
+          const fixes = [
+            [".report-section",    "#0a1a0e"],
+            [".report-card",       "#080f0a"],
+            [".report-safety-box", "#1a0f00"],
+            [".citations-wrapper", "#0a1a0e"],
+            [".pipeline-wrapper",  "#0a1a0e"],
+          ]
+          fixes.forEach(([sel, bg]) => {
+            clonedDoc.querySelectorAll(sel).forEach(el => {
+              el.style.background = bg
+              el.style.breakInside = "avoid"
+              el.style.pageBreakInside = "avoid"
+            })
+          })
+          // Protect citation rows from mid-row page breaks
+          clonedDoc.querySelectorAll(".citation-item").forEach(el => {
+            el.style.breakInside = "avoid"
+            el.style.pageBreakInside = "avoid"
+          })
+        },
+      },
+      jsPDF: { unit: "mm", format: "a4", orientation: "portrait" },
+      pagebreak: {
+        mode: ["avoid-all", "css"],
+        avoid: [
+          ".report-section",
+          ".report-card",
+          ".report-safety-box",
+          ".citation-item",
+          ".citations-wrapper",
+        ],
+      },
+    })
+    .from(element)
+    .save()
+}
+
 export default function SavedReports() {
-  const { user }            = useAuth()
+  const { user }              = useAuth()
   const [reports, setReports] = useState([])
   const [loading, setLoading] = useState(true)
-  const [expanded, setExpanded] = useState(null)
+  const [expanded, setExpanded]     = useState(null)
+  const [downloading, setDownloading] = useState(null)
 
   useEffect(() => {
     if (!user) return
@@ -27,6 +92,15 @@ export default function SavedReports() {
   async function handleDelete(id) {
     await supabase.from("saved_reports").delete().eq("id", id)
     setReports(p => p.filter(r => r.id !== id))
+  }
+
+  async function handleDownload(r) {
+    setDownloading(r.id)
+    try {
+      await downloadReportPdf(r)
+    } finally {
+      setDownloading(null)
+    }
   }
 
   if (loading) return <div style={styles.loading}>Loading saved reports...</div>
@@ -56,6 +130,19 @@ export default function SavedReports() {
                 </div>
               </div>
               <div style={styles.actions}>
+                {expanded === r.id && (
+                  <button
+                    style={{
+                      ...styles.downloadBtn,
+                      opacity: downloading === r.id ? 0.6 : 1,
+                      cursor: downloading === r.id ? "wait" : "pointer",
+                    }}
+                    onClick={() => handleDownload(r)}
+                    disabled={downloading === r.id}
+                  >
+                    {downloading === r.id ? "Generating…" : "⬇ Download PDF"}
+                  </button>
+                )}
                 <button
                   style={styles.expandBtn}
                   onClick={() => setExpanded(expanded === r.id ? null : r.id)}
@@ -72,7 +159,19 @@ export default function SavedReports() {
             </div>
 
             {expanded === r.id && (
-              <div style={styles.reportBody}>
+              <div
+                id={`report-pdf-${r.id}`}
+                style={styles.reportBody}
+              >
+                {/* PDF header — condition + feature + date */}
+                <div style={styles.pdfHeader}>
+                  <div style={styles.pdfTitle}>{r.condition}</div>
+                  <div style={styles.pdfMeta}>
+                    {r.feature_key.replace(/_/g, " ")} &nbsp;·&nbsp;
+                    {new Date(r.created_at).toLocaleDateString()} &nbsp;·&nbsp;
+                    <span style={{ color: "#4ade80" }}>HerbWise</span>
+                  </div>
+                </div>
                 <ReportView report={r.report} />
                 <CitationList citations={r.citations} />
               </div>
@@ -87,36 +186,57 @@ export default function SavedReports() {
 const styles = {
   container: { display: "flex", flexDirection: "column", gap: 16, maxWidth: 860, margin: "0 auto" },
   header: { marginBottom: 8 },
-  title: { fontSize: 32, color: "#14532d", margin: 0 },
-  subtitle: { color: "#6b7280", marginTop: 6, fontSize: 14 },
-  loading: { color: "#6b7280", padding: 40, textAlign: "center" },
+  title: { fontSize: 32, color: "#f0faf0", margin: 0, fontWeight: 800 },
+  subtitle: { color: "rgba(232,245,232,0.45)", marginTop: 6, fontSize: 14 },
+  loading: { color: "rgba(232,245,232,0.45)", padding: 40, textAlign: "center" },
   empty: {
-    background: "#fff", border: "1px solid #dcfce7",
+    background: "rgba(10,26,14,0.8)", backdropFilter: "blur(12px)",
+    border: "1px solid rgba(74,222,128,0.2)",
     borderRadius: 16, padding: "48px 32px",
-    textAlign: "center", color: "#6b7280", fontSize: 15,
+    textAlign: "center", color: "rgba(232,245,232,0.55)", fontSize: 15,
     display: "flex", flexDirection: "column", gap: 8, alignItems: "center"
   },
   emptyIcon: { fontSize: 48, marginBottom: 8 },
   card: {
-    background: "#fff", border: "1px solid #dcfce7",
+    background: "rgba(10,26,14,0.8)", backdropFilter: "blur(12px)",
+    border: "1px solid rgba(74,222,128,0.2)",
     borderRadius: 16, overflow: "hidden"
   },
   cardHeader: {
     padding: "20px 24px", display: "flex",
     justifyContent: "space-between", alignItems: "center"
   },
-  condition: { fontWeight: 700, fontSize: 18, color: "#14532d" },
-  meta: { fontSize: 13, color: "#6b7280", marginTop: 4, textTransform: "capitalize" },
+  condition: { fontWeight: 700, fontSize: 18, color: "#f0faf0" },
+  meta: { fontSize: 13, color: "rgba(232,245,232,0.45)", marginTop: 4, textTransform: "capitalize" },
   actions: { display: "flex", gap: 10, alignItems: "center" },
   expandBtn: {
-    background: "#f0fdf4", border: "1px solid #86efac",
+    background: "rgba(74,222,128,0.1)", border: "1px solid rgba(74,222,128,0.3)",
     borderRadius: 8, padding: "8px 16px",
-    fontSize: 13, fontWeight: 600, color: "#14532d", cursor: "pointer"
+    fontSize: 13, fontWeight: 600, color: "#4ade80", cursor: "pointer"
+  },
+  downloadBtn: {
+    background: "rgba(96,165,250,0.1)", border: "1px solid rgba(96,165,250,0.35)",
+    borderRadius: 8, padding: "8px 14px",
+    fontSize: 13, fontWeight: 600, color: "#60a5fa", cursor: "pointer",
+    transition: "opacity 0.2s"
   },
   deleteBtn: {
-    background: "#fef2f2", border: "1px solid #fca5a5",
+    background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.3)",
     borderRadius: 8, padding: "8px 12px",
     fontSize: 14, cursor: "pointer"
   },
-  reportBody: { borderTop: "1px solid #f1f5f9", padding: "24px" }
+  reportBody: {
+    borderTop: "1px solid rgba(74,222,128,0.1)",
+    padding: "24px",
+    background: "#050e08",
+    // Solid background ensures html2canvas captures correctly
+    backdropFilter: "none",
+  },
+  pdfHeader: {
+    paddingBottom: 16,
+    marginBottom: 20,
+    borderBottom: "1px solid rgba(74,222,128,0.2)",
+  },
+  pdfTitle: { fontSize: 22, fontWeight: 800, color: "#f0faf0" },
+  pdfMeta: { fontSize: 13, color: "rgba(232,245,232,0.45)", marginTop: 4, textTransform: "capitalize" },
 }

@@ -50,9 +50,9 @@ export default function SeasonalRemedies() {
                 key={s}
                 style={{
                   ...styles.seasonBtn,
-                  background: s === currentSeason ? "#16a34a" : "#f0fdf4",
-                  color: s === currentSeason ? "#fff" : "#14532d",
-                  border: `1.5px solid ${s === currentSeason ? "#16a34a" : "#86efac"}`
+                  background: s === currentSeason ? "#4ade80" : "rgba(74,222,128,0.07)",
+                  color: s === currentSeason ? "#050e08" : "rgba(232,245,232,0.75)",
+                  border: `1.5px solid ${s === currentSeason ? "#4ade80" : "rgba(74,222,128,0.3)"}`
                 }}
                 onClick={() => run(
                   "/seasonal-remedies/stream",
@@ -92,29 +92,30 @@ export default function SeasonalRemedies() {
 }
 
 const styles = {
-  container: { display: "flex", flexDirection: "column", gap: 28, maxWidth: 860, margin: "0 auto" },
+  container: { display: "flex", flexDirection: "column", gap: 24, maxWidth: 860, margin: "0 auto" },
   header: { textAlign: "center" },
   icon: { fontSize: 52, marginBottom: 8 },
-  title: { fontSize: 32, color: "#14532d", margin: 0 },
-  subtitle: { color: "#4b7a5e", marginTop: 8, fontSize: 15 },
+  title: { fontSize: 32, color: "#f0faf0", margin: 0, fontWeight: 800 },
+  subtitle: { color: "rgba(232,245,232,0.55)", marginTop: 8, fontSize: 15 },
   card: {
-    background: "#fff", border: "1px solid #dcfce7",
+    background: "rgba(10,26,14,0.8)", backdropFilter: "blur(12px)",
+    border: "1px solid rgba(74,222,128,0.2)",
     borderRadius: 16, padding: 28,
     display: "flex", flexDirection: "column", gap: 16
   },
-  label: { fontSize: 15, color: "#374151" },
-  hint: { fontSize: 13, color: "#6b7280" },
+  label: { fontSize: 15, color: "rgba(232,245,232,0.75)" },
+  hint: { fontSize: 13, color: "rgba(232,245,232,0.4)" },
   seasonGrid: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 },
   seasonBtn: {
     padding: "16px", borderRadius: 12, fontSize: 15,
     fontWeight: 600, cursor: "pointer", transition: "all 0.15s"
   },
   error: {
-    background: "#fef2f2", border: "1px solid #fca5a5",
-    borderRadius: 12, padding: "16px 20px", color: "#b91c1c", fontSize: 15
+    background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.3)",
+    borderRadius: 12, padding: "16px 20px", color: "#fca5a5", fontSize: 15
   },
   warning: {
-    background: "#fffbeb", border: "1px solid #f59e0b",
-    borderRadius: 12, padding: "16px 20px", color: "#92400e", fontSize: 15
+    background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)",
+    borderRadius: 12, padding: "16px 20px", color: "#fbbf24", fontSize: 15
   }
 }

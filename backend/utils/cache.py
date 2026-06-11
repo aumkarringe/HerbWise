@@ -4,6 +4,17 @@ import hashlib
 import os
 import time
 from importlib import import_module
+from pathlib import Path
+
+# Load .env if not already loaded (handles direct execution & test runs)
+try:
+    from dotenv import load_dotenv as _ld
+    for _p in [Path(__file__).parent.parent / ".env", Path(__file__).parent.parent.parent / ".env"]:
+        if _p.exists():
+            _ld(_p, override=False)
+            break
+except ImportError:
+    pass
 
 # Upstash Redis is optional; we load it dynamically to avoid hard import failures.
 try:

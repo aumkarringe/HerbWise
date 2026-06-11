@@ -44,9 +44,9 @@ export default function WellnessPlan() {
                 <button key={d}
                   style={{
                     ...styles.dayBtn,
-                    background: days === d ? "#16a34a" : "#f0fdf4",
-                    color: days === d ? "#fff" : "#14532d",
-                    border: `1.5px solid ${days === d ? "#16a34a" : "#86efac"}`
+                    background: days === d ? "#4ade80" : "rgba(74,222,128,0.07)",
+                    color: days === d ? "#050e08" : "rgba(232,245,232,0.75)",
+                    border: `1.5px solid ${days === d ? "#4ade80" : "rgba(74,222,128,0.3)"}`
                   }}
                   onClick={() => setDays(d)}
                 >
@@ -77,10 +77,10 @@ export default function WellnessPlan() {
 />
       )}
       {status === "warning" && warning && <div style={styles.warning}>⚠️ {warning}</div>}
-      {status === "error" && <div style={styles.error}>⚠️ {error}</div>}
+      {status === "error" && error && <div style={styles.error}>⚠️ {error}</div>}
 
       {/* Wellness Plan Calendar */}
-      {status === "done" && extraData?.wellness_plan && (
+      {(status === "done" || status === "error") && extraData?.wellness_plan && (
         <div style={styles.planCard}>
           <h2 style={styles.planTitle}>{extraData.wellness_plan.plan_title}</h2>
           <p style={styles.planOverview}>{extraData.wellness_plan.overview}</p>
@@ -114,7 +114,7 @@ export default function WellnessPlan() {
         </div>
       )}
 
-      {status === "done" && report && (
+      {(status === "done" || status === "error") && report && (
         <>
           <ReportView report={report} />
           <CitationList citations={citations} />
@@ -125,21 +125,23 @@ export default function WellnessPlan() {
 }
 
 const styles = {
-  container: { display: "flex", flexDirection: "column", gap: 28, maxWidth: 860, margin: "0 auto" },
+  container: { display: "flex", flexDirection: "column", gap: 24, maxWidth: 860, margin: "0 auto" },
   header: { textAlign: "center" },
   icon: { fontSize: 52, marginBottom: 8 },
-  title: { fontSize: 32, color: "#14532d", margin: 0 },
-  subtitle: { color: "#4b7a5e", marginTop: 8, fontSize: 15 },
+  title: { fontSize: 32, color: "#f0faf0", margin: 0, fontWeight: 800 },
+  subtitle: { color: "rgba(232,245,232,0.55)", marginTop: 8, fontSize: 15 },
   card: {
-    background: "#fff", border: "1px solid #dcfce7",
+    background: "rgba(10,26,14,0.8)", backdropFilter: "blur(12px)",
+    border: "1px solid rgba(74,222,128,0.2)",
     borderRadius: 16, padding: 28,
     display: "flex", flexDirection: "column", gap: 20
   },
   field: { display: "flex", flexDirection: "column", gap: 8 },
-  label: { fontSize: 14, fontWeight: 600, color: "#374151" },
+  label: { fontSize: 14, fontWeight: 600, color: "rgba(232,245,232,0.7)" },
   input: {
     padding: "12px 16px", borderRadius: 10, fontSize: 15,
-    border: "1.5px solid #bbf7d0", outline: "none", color: "#14532d"
+    border: "1.5px solid rgba(74,222,128,0.3)", outline: "none",
+    background: "rgba(5,14,8,0.8)", color: "#e8f5e8"
   },
   daysRow: { display: "flex", gap: 12 },
   dayBtn: {
@@ -147,40 +149,44 @@ const styles = {
     fontSize: 15, fontWeight: 600, cursor: "pointer"
   },
   btn: {
-    background: "#16a34a", color: "#fff", border: "none",
+    background: "#4ade80", color: "#050e08", border: "none",
     borderRadius: 12, padding: "14px", fontSize: 15,
-    fontWeight: 600, cursor: "pointer"
+    fontWeight: 700, cursor: "pointer"
   },
   planCard: {
-    background: "#fff", border: "1px solid #dcfce7",
+    background: "rgba(10,26,14,0.8)", backdropFilter: "blur(12px)",
+    border: "1px solid rgba(74,222,128,0.2)",
     borderRadius: 16, padding: 28,
     display: "flex", flexDirection: "column", gap: 20
   },
-  planTitle: { fontSize: 22, color: "#14532d", margin: 0 },
-  planOverview: { fontSize: 14, color: "#4b7a5e", lineHeight: 1.7 },
+  planTitle: { fontSize: 22, color: "#f0faf0", margin: 0, fontWeight: 700 },
+  planOverview: { fontSize: 14, color: "rgba(232,245,232,0.65)", lineHeight: 1.7 },
   daysGrid: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 16 },
   dayCard: {
-    background: "#f8fafc", borderRadius: 12, padding: 16,
-    border: "1px solid #e2e8f0", display: "flex", flexDirection: "column", gap: 10
+    background: "rgba(5,14,8,0.7)", borderRadius: 12, padding: 16,
+    border: "1px solid rgba(74,222,128,0.12)", display: "flex", flexDirection: "column", gap: 10
   },
   dayHeader: { display: "flex", justifyContent: "space-between", alignItems: "center" },
-  dayNum: { fontWeight: 700, fontSize: 14, color: "#14532d" },
-  dayTheme: { fontSize: 12, color: "#6b7280", fontStyle: "italic" },
+  dayNum: { fontWeight: 700, fontSize: 14, color: "#4ade80" },
+  dayTheme: { fontSize: 12, color: "rgba(232,245,232,0.4)", fontStyle: "italic" },
   slot: { display: "flex", flexDirection: "column", gap: 4 },
-  slotLabel: { fontSize: 12, fontWeight: 600, color: "#374151" },
+  slotLabel: { fontSize: 12, fontWeight: 600, color: "rgba(232,245,232,0.6)" },
   slotItems: { display: "flex", flexWrap: "wrap", gap: 4 },
   chip: {
-    background: "#dcfce7", borderRadius: 20, padding: "2px 8px",
-    fontSize: 11, color: "#166534"
+    background: "rgba(74,222,128,0.1)", borderRadius: 20, padding: "2px 8px",
+    fontSize: 11, color: "#4ade80"
   },
-  slotDuration: { fontSize: 11, color: "#9ca3af" },
-  dayNotes: { fontSize: 12, color: "#6b7280", fontStyle: "italic", borderTop: "1px solid #e2e8f0", paddingTop: 8 },
+  slotDuration: { fontSize: 11, color: "rgba(232,245,232,0.35)" },
+  dayNotes: {
+    fontSize: 12, color: "rgba(232,245,232,0.45)", fontStyle: "italic",
+    borderTop: "1px solid rgba(74,222,128,0.1)", paddingTop: 8
+  },
   error: {
-    background: "#fef2f2", border: "1px solid #fca5a5",
-    borderRadius: 12, padding: "16px 20px", color: "#b91c1c", fontSize: 15
+    background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.3)",
+    borderRadius: 12, padding: "16px 20px", color: "#fca5a5", fontSize: 15
   },
   warning: {
-    background: "#fffbeb", border: "1px solid #f59e0b",
-    borderRadius: 12, padding: "16px 20px", color: "#92400e", fontSize: 15
+    background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)",
+    borderRadius: 12, padding: "16px 20px", color: "#fbbf24", fontSize: 15
   }
 }

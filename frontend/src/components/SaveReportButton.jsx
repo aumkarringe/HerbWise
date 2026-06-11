@@ -51,15 +51,15 @@ export default function SaveReportButton({ condition, featureKey, report, citati
 const styles = {
   wrapper: { display: "flex", alignItems: "center", gap: 12 },
   btn: {
-    background: "#fff", border: "1.5px solid #86efac",
+    background: "rgba(74,222,128,0.1)", border: "1.5px solid rgba(74,222,128,0.35)",
     borderRadius: 10, padding: "10px 20px",
     fontSize: 14, fontWeight: 600,
-    color: "#14532d", cursor: "pointer"
+    color: "#4ade80", cursor: "pointer"
   },
   saved: {
-    background: "#f0fdf4", border: "1px solid #86efac",
+    background: "rgba(74,222,128,0.12)", border: "1px solid rgba(74,222,128,0.3)",
     borderRadius: 10, padding: "10px 20px",
-    fontSize: 14, color: "#166534", fontWeight: 600
+    fontSize: 14, color: "#4ade80", fontWeight: 600
   },
-  error: { fontSize: 13, color: "#b91c1c" }
+  error: { fontSize: 13, color: "#fca5a5" }
 }

@@ -3,17 +3,23 @@ import os
 import json
 import asyncio
 import time
+from pathlib import Path
+from dotenv import load_dotenv
+
+# ── Load .env FIRST — must happen before any module that reads os.getenv() ──
+for _p in [Path(__file__).parent / ".env", Path(__file__).parent.parent / ".env"]:
+    if _p.exists():
+        load_dotenv(_p, override=False)
+        break
+
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse, JSONResponse
 from pydantic import BaseModel
 from typing import Optional
-from dotenv import load_dotenv
 from collections import defaultdict
 from utils.cache import make_cache_key, get_cached, set_cached, is_redis_alive, get_cache_stats
 from utils.input_validator import validate_condition as _validate
-
-load_dotenv()
 
 # ─── Rate Limiting Setup ──────────────────────────────────────────────────────
 RATE_LIMIT_STORE = defaultdict(list)
@@ -60,7 +66,7 @@ app.add_middleware(
     allow_origins=[o for o in ALLOWED_ORIGINS if o],  # filter empty strings
     allow_credentials=True,
     allow_methods=["GET", "POST", "DELETE"],
-    allow_headers=["Content-Type", "Authorization"],
+    allow_headers=["Content-Type", "Authorization", "Accept", "Cache-Control", "X-Requested-With"],
 )
 
 
@@ -355,22 +361,31 @@ async def run_pipeline(
 
         if feature_key == "wellness_plan":
             yield sse("post_process", {"message": "Building day-by-day plan..."})
-            duration            = extra_data.get("duration_days", 7)
-            post_data["wellness_plan"] = await asyncio.to_thread(build_plan, a5, duration)
+            duration = extra_data.get("duration_days", 7)
+            try:
+                post_data["wellness_plan"] = await asyncio.to_thread(build_plan, a5, duration)
+            except Exception as e:
+                print(f"[Post] wellness_plan build failed: {e}")
 
         elif feature_key == "dosage_calculator":
             yield sse("post_process", {"message": "Calculating personalized dosages..."})
-            post_data["dosage"] = await asyncio.to_thread(
-                calculate_dosage, a5,
-                extra_data.get("age", 30),
-                extra_data.get("weight_kg", 70)
-            )
+            try:
+                post_data["dosage"] = await asyncio.to_thread(
+                    calculate_dosage, a5,
+                    extra_data.get("age", 30),
+                    extra_data.get("weight_kg", 70)
+                )
+            except Exception as e:
+                print(f"[Post] dosage_calculator build failed: {e}")
 
         elif feature_key == "preparation_guide":
             yield sse("post_process", {"message": "Building preparation guides..."})
-            post_data["preparation"] = await asyncio.to_thread(
-                build_guide, a5, extra_data.get("herb_name")
-            )
+            try:
+                post_data["preparation"] = await asyncio.to_thread(
+                    build_guide, a5, extra_data.get("herb_name")
+                )
+            except Exception as e:
+                print(f"[Post] preparation_guide build failed: {e}")
 
         # ── Final Result ──────────────────────────────────────────────────────
         final_result = {

@@ -27,6 +27,21 @@ STRICT RULES:
 {feature_schema}
 """
 
+def _find_orig(items: list, match_val: str, keys: tuple) -> dict:
+    for item in items:
+        for k in keys:
+            if item.get(k) == match_val:
+                return item
+    return {}
+
+def _orig_fields(orig: dict, skip: set) -> str:
+    lines = []
+    for k, v in orig.items():
+        if k in skip or not v or v in ("N/A", "string", "true", "false"):
+            continue
+        lines.append(f"  {k}: {v}")
+    return "\n".join(lines)
+
 def _build_data_summary(a4_output: dict, group: str) -> str:
     """Build a text summary of validated data to pass to A5."""
     original = a4_output.get("original", {})
@@ -44,34 +59,38 @@ def _build_data_summary(a4_output: dict, group: str) -> str:
         safe_points = [a for a in a4_output.get("verified_acupressure_points", [])
                        if a.get("anatomy_accurate")]
 
+        orig_herbs  = original.get("herbs", [])
+        orig_poses  = original.get("yoga_poses", [])
+        orig_points = original.get("acupressure_points", [])
+
         herbs_data = ""
         for h in safe_herbs:
-            orig = next((oh for oh in original.get("herbs", [])
-                         if oh.get("name") == h["name"]), {})
-            herbs_data += (f"\n- {h['name']} [{h['evidence_level']}]"
-                           f"\n  Prep: {orig.get('preparation','N/A')}"
-                           f"\n  Dosage: {orig.get('dosage','N/A')}"
-                           f"\n  Side effects: {h.get('known_side_effects','N/A')}"
-                           f"\n  Drug interactions: {h.get('drug_interactions','N/A')}\n")
+            orig = _find_orig(orig_herbs, h["name"], ("name", "ingredient"))
+            herbs_data += f"\n- {h['name']} [evidence: {h['evidence_level']}]"
+            herbs_data += "\n" + _orig_fields(orig, skip={"name", "ingredient"})
+            herbs_data += f"\n  known_side_effects: {h.get('known_side_effects', 'none reported')}"
+            herbs_data += f"\n  drug_interactions: {h.get('drug_interactions', 'none reported')}\n"
 
         poses_data = ""
         for p in safe_poses:
-            poses_data += (f"\n- {p['name']} ({p.get('sanskrit_name','N/A')})"
-                           f"\n  Alignment: {p.get('alignment_cues','N/A')}"
-                           f"\n  Duration: {p.get('verified_duration','N/A')}"
-                           f"\n  Modification: {p.get('modification','N/A')}\n")
+            orig = _find_orig(orig_poses, p["name"], ("name",))
+            poses_data += f"\n- {p['name']}"
+            poses_data += "\n" + _orig_fields(orig, skip={"name"})
+            poses_data += f"\n  modification: {p.get('modification', 'N/A')}"
+            poses_data += f"\n  verified_duration: {p.get('verified_duration', 'N/A')}\n"
 
         points_data = ""
         for a in safe_points:
-            points_data += (f"\n- {a['point_name']}"
-                            f"\n  Location: {a.get('corrected_location','N/A')}"
-                            f"\n  Technique: {a.get('verified_technique','N/A')}"
-                            f"\n  Duration: {a.get('verified_duration','N/A')}"
-                            f"\n  Frequency: {a.get('frequency','N/A')}\n")
+            orig = _find_orig(orig_points, a["point_name"], ("point_name",))
+            points_data += f"\n- {a['point_name']}"
+            points_data += "\n" + _orig_fields(orig, skip={"point_name"})
+            points_data += f"\n  corrected_location: {a.get('corrected_location', 'verified accurate')}"
+            points_data += f"\n  verified_technique: {a.get('verified_technique', 'N/A')}"
+            points_data += f"\n  verified_duration: {a.get('verified_duration', 'N/A')}\n"
 
-        return (f"SAFE HERBS:\n{herbs_data}\n"
-                f"SAFE YOGA POSES:\n{poses_data}\n"
-                f"SAFE ACUPRESSURE POINTS:\n{points_data}\n"
+        return (f"SAFE HERBS (with all feature-specific properties):\n{herbs_data}\n"
+                f"SAFE YOGA POSES (with all feature-specific benefits):\n{poses_data}\n"
+                f"SAFE ACUPRESSURE POINTS (with all feature-specific effects):\n{points_data}\n"
                 f"SAFETY NOTES:\n{a4_output.get('overall_safety_notes','')}\n"
                 f"VERIFIED CITATIONS:\n{citations}")
 

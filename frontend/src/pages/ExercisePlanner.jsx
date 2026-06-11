@@ -50,9 +50,9 @@ export default function ExercisePlanner() {
                 <button key={l.key}
                   style={{
                     ...styles.levelBtn,
-                    background: level === l.key ? "#16a34a" : "#f0fdf4",
-                    color: level === l.key ? "#fff" : "#14532d",
-                    border: `1.5px solid ${level === l.key ? "#16a34a" : "#86efac"}`
+                    background: level === l.key ? "#4ade80" : "rgba(74,222,128,0.07)",
+                    color: level === l.key ? "#050e08" : "rgba(232,245,232,0.7)",
+                    border: `1.5px solid ${level === l.key ? "#4ade80" : "rgba(74,222,128,0.3)"}`
                   }}
                   onClick={() => setLevel(l.key)}
                 >
@@ -96,40 +96,43 @@ export default function ExercisePlanner() {
 }
 
 const styles = {
-  container: { display: "flex", flexDirection: "column", gap: 28, maxWidth: 860, margin: "0 auto" },
+  container: { display: "flex", flexDirection: "column", gap: 24, maxWidth: 860, margin: "0 auto" },
   header: { textAlign: "center" },
   icon: { fontSize: 52, marginBottom: 8 },
-  title: { fontSize: 32, color: "#14532d", margin: 0 },
-  subtitle: { color: "#4b7a5e", marginTop: 8, fontSize: 15 },
+  title: { fontSize: 32, color: "#f0faf0", margin: 0, fontWeight: 800 },
+  subtitle: { color: "rgba(232,245,232,0.55)", marginTop: 8, fontSize: 15 },
   card: {
-    background: "#fff", border: "1px solid #dcfce7",
+    background: "rgba(10,26,14,0.8)", backdropFilter: "blur(12px)",
+    border: "1px solid rgba(74,222,128,0.2)",
     borderRadius: 16, padding: 28,
     display: "flex", flexDirection: "column", gap: 20
   },
   field: { display: "flex", flexDirection: "column", gap: 8 },
-  label: { fontSize: 14, fontWeight: 600, color: "#374151" },
+  label: { fontSize: 14, fontWeight: 600, color: "rgba(232,245,232,0.7)" },
   input: {
     padding: "12px 16px", borderRadius: 10, fontSize: 15,
-    border: "1.5px solid #bbf7d0", outline: "none", color: "#14532d"
+    border: "1.5px solid rgba(74,222,128,0.3)", outline: "none",
+    background: "rgba(5,14,8,0.8)", color: "#e8f5e8"
   },
   levelGrid: { display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 12 },
   levelBtn: {
     padding: "14px", borderRadius: 12, cursor: "pointer",
-    textAlign: "left", display: "flex", flexDirection: "column", gap: 4
+    textAlign: "left", display: "flex", flexDirection: "column", gap: 4,
+    transition: "all 0.15s"
   },
   levelLabel: { fontWeight: 700, fontSize: 14 },
   levelDesc: { fontSize: 12, opacity: 0.8 },
   btn: {
-    background: "#16a34a", color: "#fff", border: "none",
+    background: "#4ade80", color: "#050e08", border: "none",
     borderRadius: 12, padding: "14px", fontSize: 15,
-    fontWeight: 600, cursor: "pointer"
+    fontWeight: 700, cursor: "pointer"
   },
   error: {
-    background: "#fef2f2", border: "1px solid #fca5a5",
-    borderRadius: 12, padding: "16px 20px", color: "#b91c1c", fontSize: 15
+    background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.3)",
+    borderRadius: 12, padding: "16px 20px", color: "#fca5a5", fontSize: 15
   },
   warning: {
-    background: "#fffbeb", border: "1px solid #f59e0b",
-    borderRadius: 12, padding: "16px 20px", color: "#92400e", fontSize: 15
+    background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)",
+    borderRadius: 12, padding: "16px 20px", color: "#fbbf24", fontSize: 15
   }
 }

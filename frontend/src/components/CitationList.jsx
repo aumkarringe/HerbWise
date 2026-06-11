@@ -1,9 +1,9 @@
 // src/components/CitationList.jsx
 
 const SOURCE_COLORS = {
-  "PubMed":           { bg: "#dbeafe", text: "#1d4ed8" },
-  "Semantic Scholar": { bg: "#ede9fe", text: "#6d28d9" },
-  "OpenAlex":         { bg: "#dcfce7", text: "#166534" },
+  "PubMed":           { bg: "rgba(96,165,250,0.15)", text: "#60a5fa" },
+  "Semantic Scholar": { bg: "rgba(167,139,250,0.15)", text: "#a78bfa" },
+  "OpenAlex":         { bg: "rgba(74,222,128,0.12)",  text: "#4ade80" },
 }
 
 export default function CitationList({ citations }) {
@@ -53,14 +53,15 @@ export default function CitationList({ citations }) {
 
 const styles = {
   wrapper: {
-    background: "#fff", border: "1px solid #dcfce7",
+    background: "rgba(10,26,14,0.8)", backdropFilter: "blur(12px)",
+    border: "1px solid rgba(74,222,128,0.2)",
     borderRadius: 16, padding: "24px 28px",
     display: "flex", flexDirection: "column", gap: 16
   },
-  title: { margin: "0 0 4px", color: "#14532d", fontSize: 20 },
-  subtitle: { fontSize: 13, color: "#6b7280", margin: "0 0 8px" },
+  title: { margin: "0 0 4px", color: "#f0faf0", fontSize: 20, fontWeight: 700 },
+  subtitle: { fontSize: 13, color: "rgba(232,245,232,0.45)", margin: "0 0 8px" },
   item: {
-    borderBottom: "1px solid #f1f5f9", paddingBottom: 16,
+    borderBottom: "1px solid rgba(255,255,255,0.06)", paddingBottom: 16,
     display: "flex", flexDirection: "column", gap: 6
   },
   top: { display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" },
@@ -69,16 +70,17 @@ const styles = {
     fontSize: 11, fontWeight: 700
   },
   typeBadge: {
-    background: "#f0fdf4", color: "#166534",
+    background: "rgba(74,222,128,0.08)", color: "#4ade80",
+    border: "1px solid rgba(74,222,128,0.2)",
     borderRadius: 20, padding: "2px 10px",
     fontSize: 11, fontWeight: 600, textTransform: "uppercase"
   },
-  itemName: { fontWeight: 600, fontSize: 14, color: "#1e293b" },
-  year: { fontSize: 12, color: "#9ca3af", marginLeft: "auto" },
-  paperTitle: { fontSize: 14, color: "#1e293b", fontWeight: 500, lineHeight: 1.5 },
-  authors: { fontSize: 12, color: "#6b7280" },
-  journal: { fontSize: 12, color: "#6b7280", fontStyle: "italic" },
+  itemName: { fontWeight: 600, fontSize: 14, color: "#f0faf0" },
+  year: { fontSize: 12, color: "rgba(232,245,232,0.35)", marginLeft: "auto" },
+  paperTitle: { fontSize: 14, color: "rgba(232,245,232,0.8)", fontWeight: 500, lineHeight: 1.5 },
+  authors: { fontSize: 12, color: "rgba(232,245,232,0.45)" },
+  journal: { fontSize: 12, color: "rgba(232,245,232,0.45)", fontStyle: "italic" },
   linkRow: { display: "flex", gap: 16, alignItems: "center" },
-  link: { fontSize: 12, color: "#16a34a", wordBreak: "break-all" },
-  doiLink: { fontSize: 12, color: "#6b7280", textDecoration: "none", fontWeight: 600 }
+  link: { fontSize: 12, color: "#4ade80", wordBreak: "break-all" },
+  doiLink: { fontSize: 12, color: "rgba(232,245,232,0.4)", textDecoration: "none", fontWeight: 600 }
 }

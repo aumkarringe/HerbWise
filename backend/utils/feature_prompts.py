@@ -1045,18 +1045,21 @@ Be clear about which remedies are morning vs evening.""",
   ]
 }
 Rules: herbs exactly 5.
-NO yoga poses, NO acupressure points — herbs ONLY.
+ABSOLUTELY NO pharmaceutical drugs, OTC medicines, vitamins, or supplements (e.g. NO ibuprofen, aspirin, paracetamol, antihistamines, statins).
+ONLY traditional plant-based herbal remedies (e.g. ashwagandha, turmeric, valerian, chamomile).
+NO yoga poses, NO acupressure points — herbal remedies ONLY.
 Every herb MUST include known_drug_interactions and contraindicated_for.
-Safety rating is REQUIRED for every herb.
-Only include herbs with well-established safety profiles.""",
+Safety rating is REQUIRED for every herb.""",
 
-        "a1_focus": """Find the 5 SAFEST herbal remedies for this condition.
+        "a1_focus": """Find the 5 SAFEST traditional herbal remedies for this condition.
+ONLY plant-based herbs — NO pharmaceutical drugs, NO OTC medicines, NO supplements.
 Focus exclusively on herbs with well-established safety profiles.
-For every herb document: drug interactions, contraindications, safety rating.
-Consider the patient's age, weight, and current medications.
+For every herb document: drug interactions with the patient's current medications, contraindications, safety rating.
+Consider the patient's age, weight, and current medications when selecting herbs.
 SKIP yoga poses and acupressure — this feature is herbs-only.""",
 
         "a2_focus": """Prioritize SAFETY evidence above efficacy evidence.
+Only validate traditional plant-based herbs — reject any pharmaceutical drug that slips through.
 For every herb look specifically for:
 drug interaction studies, contraindication research,
 studies on safety in specific populations (elderly, pregnant, children).
@@ -1098,9 +1101,10 @@ Flag ANYTHING with moderate or higher risk for this patient profile.""",
   }
 }""",
 
-        "a5_focus": """Write a safety-first report for this specific patient profile.
+        "a5_focus": """Write a safety-first report for this specific patient profile using ONLY herbal remedies.
+NEVER include pharmaceutical drugs, OTC medications, or supplements — herbal plants only.
 Lead every section with safety warnings before benefits.
-medication_interaction_table: list every known interaction clearly.
+medication_interaction_table: list every known herb-drug interaction clearly.
 safest_options: the top 2-3 herbs safest for this specific age/weight/medication profile.
 herbs_to_avoid_for_this_profile: what NOT to take and why.
 Never recommend anything rated use_with_caution without a strong warning.""",
@@ -1130,19 +1134,23 @@ Never recommend anything rated use_with_caution without a strong warning.""",
   ]
 }
 Rules: herbs exactly 5.
-NO yoga poses, NO acupressure points — herbs with dosage info ONLY.
+ABSOLUTELY NO pharmaceutical drugs, OTC medicines, or supplements (e.g. NO ibuprofen, aspirin, paracetamol, antihistamines, melatonin synthetic).
+ONLY traditional plant-based herbal remedies (e.g. valerian, chamomile, ginger, turmeric, ashwagandha).
+NO yoga poses, NO acupressure points — herbal dosage info ONLY.
 Every herb MUST include: standard_adult_dose, max_daily_dose, timing, how_long_to_work.
 Include specific dose form (tea/tincture/capsule/powder/extract).""",
 
-        "a1_focus": """Find the 5 best herbs for this condition with DETAILED dosage information.
+        "a1_focus": """Find the 5 best HERBAL PLANT REMEDIES for this condition with DETAILED dosage information.
+ONLY traditional plant-based herbs — NO pharmaceutical drugs, NO OTC medicines, NO synthetic supplements.
 For every herb you MUST include:
 - Standard adult dose with units (mg, ml, cups, etc.)
 - Maximum safe daily dose
 - Best timing (with food, before bed, morning, etc.)
 - How long until effects are felt
-SKIP yoga poses and acupressure — this feature is dosage-focused herbs only.""",
+SKIP yoga poses and acupressure — this feature is dosage-focused herbal remedies only.""",
 
-        "a2_focus": """Focus evidence search on DOSAGE STUDIES specifically.
+        "a2_focus": """Focus evidence search on DOSAGE STUDIES for herbal remedies specifically.
+Only validate traditional plant-based herbs — reject any pharmaceutical drug that slips through.
 Look for clinical trials that specify exact doses used.
 Note the dose range used in studies vs traditional use doses.
 Flag any discrepancy between study doses and traditional doses.""",
@@ -1175,7 +1183,8 @@ Flag any discrepancy between study doses and traditional doses.""",
   }
 }""",
 
-        "a5_focus": """Write a dosage-focused report.
+        "a5_focus": """Write a dosage-focused report using ONLY traditional herbal plant remedies.
+NEVER include pharmaceutical drugs, OTC medications, or synthetic supplements.
 dosage_table: clear table with every dosage detail for each herb.
 personalized_dose will be calculated by dosage_calculator.py post-processor.
 Include clear warnings about not exceeding maximum doses.

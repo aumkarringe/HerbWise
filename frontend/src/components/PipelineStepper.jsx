@@ -1,9 +1,9 @@
 // src/components/PipelineStepper.jsx
 
 const STATUS_COLORS = {
-  idle:    { bg: "#f1f5f9", border: "#cbd5e1", text: "#64748b" },
-  running: { bg: "#fffbeb", border: "#fcd34d", text: "#92400e" },
-  done:    { bg: "#f0fdf4", border: "#86efac", text: "#14532d" },
+  idle:    { bg: "rgba(255,255,255,0.03)", border: "rgba(255,255,255,0.08)", text: "rgba(232,245,232,0.35)" },
+  running: { bg: "rgba(251,146,60,0.08)",  border: "rgba(251,146,60,0.35)",  text: "#fb923c" },
+  done:    { bg: "rgba(74,222,128,0.08)",  border: "rgba(74,222,128,0.3)",   text: "#4ade80" },
 }
 
 const STATUS_ICON = {
@@ -87,15 +87,16 @@ export default function PipelineStepper({
 
 const styles = {
   wrapper: {
-    background: "#fff",
+    background: "rgba(10,26,14,0.8)",
+    backdropFilter: "blur(12px)",
     borderRadius: 16,
     padding: "24px 28px",
-    border: "1px solid #dcfce7"
+    border: "1px solid rgba(74,222,128,0.2)"
   },
-  heading:  { margin: "0 0 20px", color: "#14532d", fontSize: 18 },
+  heading:  { margin: "0 0 20px", color: "#f0faf0", fontSize: 18, fontWeight: 700 },
   steps:    { display: "flex", flexDirection: "column", gap: 0 },
   row:      { display: "flex", flexDirection: "column" },
-  line:     { width: 2, height: 16, background: "#dcfce7", marginLeft: 20 },
+  line:     { width: 2, height: 14, background: "rgba(74,222,128,0.15)", marginLeft: 20 },
   card: {
     border: "1.5px solid",
     borderRadius: 12,
@@ -103,28 +104,29 @@ const styles = {
     transition: "all 0.3s ease"
   },
   cardTop:   { display: "flex", gap: 14, alignItems: "flex-start" },
-  icon:      { fontSize: 22, marginTop: 2, fontWeight: 700, minWidth: 24 },
-  agentId:   { fontWeight: 700, fontSize: 13 },
-  agentName: { fontWeight: 600, fontSize: 15, color: "#1e293b" },
-  agentDesc: { fontSize: 13, color: "#64748b", marginTop: 2 },
+  icon:      { fontSize: 20, marginTop: 2, fontWeight: 700, minWidth: 24 },
+  agentId:   { fontWeight: 700, fontSize: 12, letterSpacing: "0.05em" },
+  agentName: { fontWeight: 600, fontSize: 14, color: "#f0faf0" },
+  agentDesc: { fontSize: 12, color: "rgba(232,245,232,0.5)", marginTop: 2 },
   badges:    { display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10 },
   badge: {
-    background: "#dcfce7",
+    background: "rgba(74,222,128,0.1)",
+    border: "1px solid rgba(74,222,128,0.2)",
     borderRadius: 20,
     padding: "3px 12px",
-    fontSize: 12,
-    color: "#166534"
+    fontSize: 11,
+    color: "#4ade80"
   },
   cacheBadge: {
-    background: "#fefce8",
-    border: "1px solid #fde047",
+    background: "rgba(251,191,36,0.08)",
+    border: "1px solid rgba(251,191,36,0.25)",
     borderRadius: 10,
     padding: "8px 16px",
     fontSize: 13,
-    color: "#854d0e",
+    color: "#fbbf24",
     fontWeight: 600,
     marginBottom: 12,
     textAlign: "center"
   },
-  running: { marginTop: 8, fontSize: 13, color: "#92400e", fontStyle: "italic" }
+  running: { marginTop: 8, fontSize: 13, color: "#fb923c", fontStyle: "italic" }
 }

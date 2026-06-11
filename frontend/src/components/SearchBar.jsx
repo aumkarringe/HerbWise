@@ -38,18 +38,20 @@ const styles = {
     padding: "14px 18px",
     fontSize: 16,
     borderRadius: 12,
-    border: "1.5px solid #bbf7d0",
+    border: "1.5px solid rgba(74,222,128,0.3)",
     outline: "none",
-    background: "#fff",
-    color: "#14532d"
+    background: "rgba(10,26,14,0.8)",
+    color: "#e8f5e8",
+    backdropFilter: "blur(8px)",
   },
   button: {
     padding: "14px 28px",
     fontSize: 16,
     borderRadius: 12,
     border: "none",
-    background: "#16a34a",
-    color: "#fff",
-    fontWeight: 600
+    background: "#4ade80",
+    color: "#050e08",
+    fontWeight: 700,
+    letterSpacing: "-0.2px",
   }
 }

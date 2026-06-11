@@ -1,9 +1,6 @@
 # agents/a4_citation_checker.py
-import json
-import re
 import time
 import httpx
-from utils.llm_routere import call_llm
 
 # ─── Real API Search Functions ────────────────────────────────────────────────
 
@@ -155,33 +152,18 @@ def search_openalex(query: str, max_results: int = 2) -> list[dict]:
         return []
 
 
-# ─── Search Term Generator ────────────────────────────────────────────────────
+# ─── Search Term Generator (template-based, no LLM call) ─────────────────────
 
-TERM_SYSTEM = """You are a medical research librarian.
-
-Generate precise PubMed search terms for each item provided.
-
-STRICT RULES:
-- Return ONLY valid JSON. No markdown, no backticks.
-- Keep queries short and specific (3-6 words max)
-- Focus on clinical/human studies
-
-Return this schema:
-{
-  "search_terms": [
-    {
-      "item_name": "string",
-      "item_type": "herb|yoga|acupressure|breathing|exercise",
-      "query": "string"
-    }
-  ]
+_QUERY_TEMPLATES = {
+    "herb":        "{name} {condition} herbal medicine",
+    "yoga":        "{name} yoga {condition} clinical",
+    "acupressure": "{name} acupressure {condition}",
+    "breathing":   "{name} breathing technique {condition}",
+    "exercise":    "{name} exercise {condition}",
 }
-"""
 
 def _extract_items(a3_output: dict) -> list[dict]:
-    """Extract searchable items from A3 output regardless of group."""
     group = a3_output.get("group", "full")
-    condition = a3_output["condition"]
     items = []
 
     if group == "full":
@@ -219,34 +201,20 @@ def _extract_items(a3_output: dict) -> list[dict]:
     return items
 
 
-def generate_search_terms(a3_output: dict) -> list[dict]:
+def generate_search_terms(a3_output: dict, feature_key: str = "wellness_search") -> list[dict]:
     condition = a3_output["condition"]
     items     = _extract_items(a3_output)
 
-    if not items:
-        return []
-
-    items_text = "\n".join([f"- {i['name']} ({i['type']})" for i in items])
-
-    user_prompt = f"""Generate precise PubMed search terms for these items used for {condition}:
-
-{items_text}
-
-For each item create a short, specific search query (3-6 words) that would find
-clinical studies about its effectiveness for {condition}."""
-
-    raw = call_llm(primary="groq", system=TERM_SYSTEM, user=user_prompt)
-    raw = raw.strip()
-    raw = re.sub(r"^```json\s*", "", raw)
-    raw = re.sub(r"^```\s*", "", raw)
-    raw = re.sub(r"```$", "", raw)
-
-    try:
-        result = json.loads(raw)
-        return result.get("search_terms", [])
-    except Exception as e:
-        print(f"[A4] Search term generation failed: {e}")
-        return []
+    return [
+        {
+            "item_name": i["name"],
+            "item_type": i["type"],
+            "query": _QUERY_TEMPLATES.get(i["type"], "{name} {condition}").format(
+                name=i["name"], condition=condition
+            ),
+        }
+        for i in items
+    ]
 
 
 # ─── URL Verifier ─────────────────────────────────────────────────────────────
@@ -273,7 +241,7 @@ def run(a3_output: dict, feature_key: str = "wellness_search") -> dict:
     print(f"[A4] Finding real citations for: {condition} | Group: {group}")
 
     print("[A4] Generating search terms...")
-    search_terms = generate_search_terms(a3_output)
+    search_terms = generate_search_terms(a3_output, feature_key)
 
     if not search_terms:
         print("[A4] No search terms generated — skipping citations")

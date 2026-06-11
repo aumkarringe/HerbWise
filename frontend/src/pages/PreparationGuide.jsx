@@ -131,73 +131,77 @@ export default function PreparationGuide() {
 }
 
 const styles = {
-  container: { display: "flex", flexDirection: "column", gap: 28, maxWidth: 860, margin: "0 auto" },
+  container: { display: "flex", flexDirection: "column", gap: 24, maxWidth: 860, margin: "0 auto" },
   header: { textAlign: "center" },
   icon: { fontSize: 52, marginBottom: 8 },
-  title: { fontSize: 32, color: "#14532d", margin: 0 },
-  subtitle: { color: "#4b7a5e", marginTop: 8, fontSize: 15 },
+  title: { fontSize: 32, color: "#f0faf0", margin: 0, fontWeight: 800 },
+  subtitle: { color: "rgba(232,245,232,0.55)", marginTop: 8, fontSize: 15 },
   card: {
-    background: "#fff", border: "1px solid #dcfce7",
+    background: "rgba(10,26,14,0.8)", backdropFilter: "blur(12px)",
+    border: "1px solid rgba(74,222,128,0.2)",
     borderRadius: 16, padding: 28,
     display: "flex", flexDirection: "column", gap: 16
   },
   field: { display: "flex", flexDirection: "column", gap: 6 },
-  label: { fontSize: 13, fontWeight: 600, color: "#374151" },
+  label: { fontSize: 13, fontWeight: 600, color: "rgba(232,245,232,0.7)" },
   input: {
     padding: "12px 16px", borderRadius: 10, fontSize: 15,
-    border: "1.5px solid #bbf7d0", outline: "none", color: "#14532d"
+    border: "1.5px solid rgba(74,222,128,0.3)", outline: "none",
+    background: "rgba(5,14,8,0.8)", color: "#e8f5e8"
   },
   btn: {
-    background: "#16a34a", color: "#fff", border: "none",
+    background: "#4ade80", color: "#050e08", border: "none",
     borderRadius: 12, padding: "14px", fontSize: 15,
-    fontWeight: 600, cursor: "pointer"
+    fontWeight: 700, cursor: "pointer"
   },
   recipeCard: {
-    background: "#fff", border: "1px solid #dcfce7",
+    background: "rgba(10,26,14,0.8)", backdropFilter: "blur(12px)",
+    border: "1px solid rgba(74,222,128,0.2)",
     borderRadius: 16, padding: 28,
     display: "flex", flexDirection: "column", gap: 16
   },
   recipeHeader: { display: "flex", justifyContent: "space-between", alignItems: "flex-start" },
-  herbName: { fontSize: 22, color: "#14532d", margin: "0 0 8px" },
+  herbName: { fontSize: 22, color: "#4ade80", margin: "0 0 8px", fontWeight: 700 },
   recipeMeta: { display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" },
   diffBadge: {
-    color: "#fff", borderRadius: 20, padding: "2px 10px",
+    color: "#050e08", borderRadius: 20, padding: "2px 10px",
     fontSize: 12, fontWeight: 600, textTransform: "capitalize"
   },
-  metaItem: { fontSize: 13, color: "#6b7280" },
-  bestTime: { fontSize: 13, color: "#6b7280", textAlign: "right" },
+  metaItem: { fontSize: 13, color: "rgba(232,245,232,0.45)" },
+  bestTime: { fontSize: 13, color: "rgba(232,245,232,0.45)", textAlign: "right" },
   twoCol: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 },
-  subTitle: { fontSize: 14, fontWeight: 700, color: "#374151", margin: "0 0 8px" },
-  ingredient: { display: "flex", gap: 10, fontSize: 14, color: "#374151", marginBottom: 4 },
-  qty: { fontWeight: 600, color: "#16a34a", minWidth: 60 },
-  equipItem: { fontSize: 14, color: "#374151", marginBottom: 4 },
+  subTitle: { fontSize: 13, fontWeight: 700, color: "rgba(232,245,232,0.6)", margin: "0 0 8px", textTransform: "uppercase", letterSpacing: "0.06em" },
+  ingredient: { display: "flex", gap: 10, fontSize: 14, color: "rgba(232,245,232,0.75)", marginBottom: 4 },
+  qty: { fontWeight: 600, color: "#4ade80", minWidth: 60 },
+  equipItem: { fontSize: 14, color: "rgba(232,245,232,0.65)", marginBottom: 4 },
   step: { display: "flex", gap: 14, alignItems: "flex-start" },
   stepNum: {
-    background: "#16a34a", color: "#fff", borderRadius: "50%",
+    background: "#4ade80", color: "#050e08", borderRadius: "50%",
     width: 28, height: 28, display: "flex", alignItems: "center",
     justifyContent: "center", fontSize: 13, fontWeight: 700, flexShrink: 0
   },
   stepContent: { display: "flex", flexDirection: "column", gap: 4, flex: 1 },
-  stepInstruction: { fontSize: 14, color: "#1e293b", lineHeight: 1.6 },
+  stepInstruction: { fontSize: 14, color: "rgba(232,245,232,0.8)", lineHeight: 1.6 },
   stepMeta: { display: "flex", flexWrap: "wrap", gap: 6 },
   metaChip: {
-    background: "#f1f5f9", borderRadius: 20, padding: "2px 8px",
-    fontSize: 12, color: "#475569"
+    background: "rgba(255,255,255,0.06)", borderRadius: 20, padding: "2px 8px",
+    fontSize: 12, color: "rgba(232,245,232,0.55)"
   },
   tipChip: {
-    background: "#fefce8", borderRadius: 20, padding: "2px 8px",
-    fontSize: 12, color: "#854d0e"
+    background: "rgba(251,191,36,0.08)", borderRadius: 20, padding: "2px 8px",
+    fontSize: 12, color: "#fbbf24"
   },
   storageBox: {
-    background: "#f0fdf4", borderRadius: 10, padding: "12px 16px",
-    fontSize: 13, color: "#374151", lineHeight: 1.7
+    background: "rgba(74,222,128,0.06)", borderRadius: 10, padding: "12px 16px",
+    fontSize: 13, color: "rgba(232,245,232,0.7)", lineHeight: 1.7,
+    border: "1px solid rgba(74,222,128,0.15)"
   },
   error: {
-    background: "#fef2f2", border: "1px solid #fca5a5",
-    borderRadius: 12, padding: "16px 20px", color: "#b91c1c", fontSize: 15
+    background: "rgba(220,38,38,0.1)", border: "1px solid rgba(220,38,38,0.3)",
+    borderRadius: 12, padding: "16px 20px", color: "#fca5a5", fontSize: 15
   },
   warning: {
-    background: "#fffbeb", border: "1px solid #f59e0b",
-    borderRadius: 12, padding: "16px 20px", color: "#92400e", fontSize: 15
+    background: "rgba(245,158,11,0.08)", border: "1px solid rgba(245,158,11,0.25)",
+    borderRadius: 12, padding: "16px 20px", color: "#fbbf24", fontSize: 15
   }
 }

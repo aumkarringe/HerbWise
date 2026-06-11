@@ -59,22 +59,22 @@ def build_plan(a5_output: dict, duration_days: int = 7) -> dict:
 
     print(f"[Wellness Plan] Building {duration_days}-day plan for: {condition}")
 
-    # Summarize available remedies
-    herbs  = [h["name"] for h in report["herbs"]]
-    poses  = [p["name"] for p in report["yoga_routine"]]
-    points = [a["point_name"] for a in report["acupressure_guide"]]
+    # Summarize available remedies (use .get() throughout — A5 may omit optional fields)
+    herbs_list  = report.get("herbs", [])
+    poses_list  = report.get("yoga_routine", [])
+    points_list = report.get("acupressure_guide", [])
 
     herb_details = "\n".join(
-        [f"- {h['name']}: {h['how_to_use']} | Dosage: {h['dosage']}"
-         for h in report["herbs"]]
+        [f"- {h.get('name','?')}: {h.get('how_to_use','as directed')} | Dosage: {h.get('dosage','as directed')}"
+         for h in herbs_list]
     )
     pose_details = "\n".join(
-        [f"- {p['name']}: hold {p['hold_time']}"
-         for p in report["yoga_routine"]]
+        [f"- {p.get('name','?')}: hold {p.get('hold_time', p.get('duration','30s'))}"
+         for p in poses_list]
     )
     point_details = "\n".join(
-        [f"- {a['point_name']}: {a['how_long']} | {a['how_often']}"
-         for a in report["acupressure_guide"]]
+        [f"- {a.get('point_name','?')}: {a.get('how_long','1-2 min')} | {a.get('how_often', a.get('frequency','daily'))}"
+         for a in points_list]
     )
 
     user_prompt = f"""Create a {duration_days}-day wellness plan for: {condition}
