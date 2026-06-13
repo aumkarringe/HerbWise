@@ -1,11 +1,7 @@
-// src/pages/WellnessSearch.jsx
 import { useState, useEffect }  from "react"
 import SearchBar                from "../components/SearchBar"
-import PipelineStepper          from "../components/PipelineStepper"
-import ReportView               from "../components/ReportView"
-import CitationList             from "../components/CitationList"
 import AuthWall                 from "../components/AuthWall"
-import SaveReportButton         from "../components/SaveReportButton"
+import FeaturePage              from "../components/FeaturePage"
 import usePipeline              from "../hooks/usePipeline"
 import { useAuth }              from "../context/AuthContext"
 import { hasUsedFreeSearch, markFreeSearchUsed } from "../hooks/useGuestLimit"
@@ -20,141 +16,46 @@ const AGENTS = [
 
 export default function WellnessSearch() {
   const { user } = useAuth()
-  const {
-    status, agentStates, agentSummaries,
-    report, citations, error,
-    warning,
-    fromCache, cacheMessage, run
-  } = usePipeline()
+  const pipeline = usePipeline()
+  const [showAuthWall, setShowAuthWall]   = useState(false)
+  const [guestBlocked, setGuestBlocked]   = useState(false)
+  const [lastCondition, setLastCondition] = useState("")
 
-  const [showAuthWall,  setShowAuthWall]  = useState(false)
-  const [guestBlocked,  setGuestBlocked]  = useState(false)
-
-  // Check if guest already used their free search
   useEffect(() => {
     if (!user) {
-      hasUsedFreeSearch().then(used => {
-        if (used) setGuestBlocked(true)
-      })
+      hasUsedFreeSearch().then(used => { if (used) setGuestBlocked(true) })
     }
   }, [user])
 
   async function handleSearch(condition) {
-    // Guest already used free search → show auth wall
-    if (!user && guestBlocked) {
-      setShowAuthWall(true)
-      return
-    }
-
-    run("/analyze/stream", { condition, feature_key: "wellness_search" })
-
-    // Mark free search as used for guest
-    if (!user) {
-      await markFreeSearchUsed()
-      setGuestBlocked(true)
-    }
+    if (!user && guestBlocked) { setShowAuthWall(true); return }
+    setLastCondition(condition)
+    pipeline.run("/analyze/stream", { condition, feature_key: "wellness_search" })
+    if (!user) { await markFreeSearchUsed(); setGuestBlocked(true) }
   }
 
   return (
-    <div className="ws-container" style={styles.container}>
+    <>
+      {showAuthWall && <AuthWall />}
 
-      {/* Auth wall modal - blocking, no close button */}
-      {showAuthWall && (
-        <AuthWall />
-      )}
-
-      {/* Header */}
-      <div className="ws-header" style={styles.header}>
-        <h1 className="ws-title" style={styles.title}>🔍 Wellness Search</h1>
-        <p className="ws-subtitle" style={styles.subtitle}>
-          Search any condition, get evidence-validated herbs, yoga & acupressure
-        </p>
+      <FeaturePage
+        title="Wellness Search" emoji="🔍"
+        subtitle="Search any condition, get evidence-validated herbs, yoga & acupressure"
+        agents={AGENTS} pipeline={pipeline} featureKey="wellness_search" condition={lastCondition}
+      >
         {!user && !guestBlocked && (
-          <div className="ws-guest-notice" style={styles.guestNotice}>
-            ✨ You have 1 free search — sign in for unlimited access
+          <div style={{ textAlign: "center" }}>
+            <span style={{ display: "inline-block", background: "rgba(74,222,128,0.08)", border: "1px solid rgba(74,222,128,0.25)", borderRadius: 20, padding: "6px 16px", fontSize: 13, color: "#4ade80" }}>
+              ✨ You have 1 free search — sign in for unlimited access
+            </span>
           </div>
         )}
-      </div>
-
-      {/* Always show search bar - it will block on second search attempt */}
-      <SearchBar
-        onSearch={handleSearch}
-        disabled={status === "running"}
-        placeholder='e.g. "headache", "insomnia", "joint pain"'
-      />
-
-      {status !== "idle" && (
-        <PipelineStepper
-          agents={AGENTS}
-          agentStates={agentStates}
-          agentSummaries={agentSummaries}
-          fromCache={fromCache}
-          cacheMessage={cacheMessage}
+        <SearchBar
+          onSearch={handleSearch}
+          disabled={pipeline.status === "running"}
+          placeholder='e.g. "headache", "insomnia", "joint pain"'
         />
-      )}
-
-      {status === "error" && (
-        <div className="ws-error" style={styles.error}>⚠️ {error}</div>
-      )}
-
-      {status === "warning" && warning && (
-        <div className="ws-warning" style={styles.warning}>⚠️ {warning}</div>
-      )}
-
-      {status === "done" && report && (
-        <>
-          {user && (
-            <SaveReportButton
-              condition={report.condition}
-              featureKey="wellness_search"
-              report={report}
-              citations={citations}
-            />
-          )}
-          <ReportView report={report} />
-          <CitationList citations={citations} />
-        </>
-      )}
-
-    </div>
+      </FeaturePage>
+    </>
   )
-}
-
-const styles = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    gap: 24,
-    maxWidth: 860,
-    margin: "0 auto",
-  },
-  header: { textAlign: "center", paddingBottom: 8 },
-  title: { fontSize: 34, color: "#f0faf0", margin: 0, fontWeight: 800, letterSpacing: "-0.5px" },
-  subtitle: { color: "rgba(232,245,232,0.55)", marginTop: 8, fontSize: 15 },
-  guestNotice: {
-    marginTop: 10,
-    display: "inline-block",
-    background: "rgba(74,222,128,0.08)",
-    border: "1px solid rgba(74,222,128,0.25)",
-    borderRadius: 20,
-    padding: "6px 16px",
-    fontSize: 13,
-    color: "#4ade80"
-  },
-  error: {
-    background: "rgba(220,38,38,0.1)",
-    border: "1px solid rgba(220,38,38,0.3)",
-    borderRadius: 12,
-    padding: "16px 20px",
-    color: "#fca5a5",
-    fontSize: 15
-  },
-  warning: {
-    background: "rgba(245,158,11,0.08)",
-    border: "1px solid rgba(245,158,11,0.25)",
-    borderRadius: 12,
-    padding: "16px 20px",
-    color: "#fbbf24",
-    fontSize: 15
-  }
 }

@@ -1,5 +1,5 @@
 // src/hooks/usePipeline.js
-import { useState } from "react"
+import { useState, useRef } from "react"
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000"
 
@@ -54,6 +54,7 @@ export default function usePipeline() {
   const [detectedCondition, setDetectedCondition] = useState("")
   const [fromCache, setFromCache]               = useState(false)
   const [cacheMessage, setCacheMessage]         = useState("")
+  const lastCallRef                             = useRef({ url: null, body: null })
 
   function reset() {
     setStatus("idle")
@@ -69,7 +70,13 @@ export default function usePipeline() {
     setCacheMessage("")
   }
 
+  function retry() {
+    const { url, body } = lastCallRef.current
+    if (url) run(url, body)
+  }
+
   async function run(url, body) {
+    lastCallRef.current = { url, body }
     reset()
     setStatus("running")
 
@@ -193,6 +200,7 @@ export default function usePipeline() {
     fromCache,
     cacheMessage,
     run,
+    retry,
     reset
   }
 }

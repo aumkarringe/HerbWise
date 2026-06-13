@@ -7,9 +7,8 @@ const STATUS_COLORS = {
 }
 
 const STATUS_ICON = {
-  idle:    "○",
-  running: "⟳",
-  done:    "✓"
+  idle: "○",
+  done: "✓",
 }
 
 export default function PipelineStepper({
@@ -50,7 +49,9 @@ export default function PipelineStepper({
               }}>
                 <div className="pipeline-card-top" style={styles.cardTop}>
                   <span className="pipeline-icon" style={{ ...styles.icon, color: colors.text }}>
-                    {STATUS_ICON[state]}
+                    {state === "running"
+                      ? <span className="pipeline-spinner">⟳</span>
+                      : STATUS_ICON[state]}
                   </span>
                   <div>
                     <div style={{ ...styles.agentId, color: colors.text }}>
@@ -72,9 +73,8 @@ export default function PipelineStepper({
                   </div>
                 )}
 
-                {/* Spinner when running */}
                 {state === "running" && (
-                  <div className="pipeline-running" style={styles.running}>Processing...</div>
+                  <div className="pipeline-running" style={styles.running}>Processing…</div>
                 )}
               </div>
             </div>

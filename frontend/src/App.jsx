@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react"
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom"
 import { AuthProvider, useAuth } from "./context/AuthContext"
-import { ThemeProvider } from "./context/ThemeContext"
 import AuthWall  from "./components/AuthWall"
 import Sidebar   from "./components/Sidebar"
 import { hasUsedFreeSearch } from "./hooks/useGuestLimit"
@@ -80,18 +79,34 @@ function AppInner() {
           <Route path="/breathing-test"     element={<BreathingTest />} />
           <Route path="/exercise-planner"   element={<ExercisePlanner />} />
           <Route path="/saved-reports"      element={<SavedReports />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
     </div>
   )
 }
 
+function NotFound() {
+  const navigate = useNavigate()
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh", gap: 16, textAlign: "center" }}>
+      <div style={{ fontSize: 64 }}>🌿</div>
+      <h1 style={{ fontSize: 32, color: "#f0faf0", margin: 0, fontWeight: 800 }}>Page Not Found</h1>
+      <p style={{ color: "rgba(232,245,232,0.55)", fontSize: 15, margin: 0 }}>The page you're looking for doesn't exist.</p>
+      <button
+        onClick={() => navigate("/wellness-search")}
+        style={{ marginTop: 8, background: "#4ade80", color: "#050e08", border: "none", borderRadius: 12, padding: "12px 28px", fontSize: 15, fontWeight: 700, cursor: "pointer" }}
+      >
+        Go to Wellness Search
+      </button>
+    </div>
+  )
+}
+
 export default function App() {
   return (
-    <ThemeProvider>
-      <AuthProvider>
-        <AppInner />
-      </AuthProvider>
-    </ThemeProvider>
+    <AuthProvider>
+      <AppInner />
+    </AuthProvider>
   )
 }

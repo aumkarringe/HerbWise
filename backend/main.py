@@ -3,7 +3,14 @@ import os
 import json
 import asyncio
 import time
+import logging
 from pathlib import Path
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
 from dotenv import load_dotenv
 
 # ── Load .env FIRST — must happen before any module that reads os.getenv() ──
@@ -18,23 +25,39 @@ from fastapi.responses import StreamingResponse, JSONResponse
 from pydantic import BaseModel
 from typing import Optional
 from collections import defaultdict
-from utils.cache import make_cache_key, get_cached, set_cached, is_redis_alive, get_cache_stats
+from utils.cache import make_cache_key, get_cached, set_cached, is_redis_alive, get_cache_stats, client as _redis_client, _client_backend as _redis_backend
 from utils.input_validator import validate_condition as _validate
 
 # ─── Rate Limiting Setup ──────────────────────────────────────────────────────
-RATE_LIMIT_STORE = defaultdict(list)
 RATE_LIMIT_WINDOW = 60
 RATE_LIMIT_MAX    = 20
+
+# In-memory fallback (used only when Redis is unavailable)
+_rl_fallback: dict[str, list] = defaultdict(list)
 
 def is_rate_limited(client_ip: str) -> bool:
     now    = time.time()
     cutoff = now - RATE_LIMIT_WINDOW
-    RATE_LIMIT_STORE[client_ip] = [
-        ts for ts in RATE_LIMIT_STORE[client_ip] if ts > cutoff
-    ]
-    if len(RATE_LIMIT_STORE[client_ip]) >= RATE_LIMIT_MAX:
+    key    = f"ratelimit:{client_ip}"
+
+    if _redis_client is not None:
+        try:
+            pipe = _redis_client.pipeline()
+            pipe.zremrangebyscore(key, 0, cutoff)
+            pipe.zadd(key, {str(now): now})
+            pipe.zcard(key)
+            pipe.expire(key, RATE_LIMIT_WINDOW * 2)
+            results = pipe.execute()
+            count = results[2]
+            return count > RATE_LIMIT_MAX
+        except Exception:
+            pass  # Redis unavailable — fall through to in-memory
+
+    # In-memory sliding window
+    _rl_fallback[client_ip] = [ts for ts in _rl_fallback[client_ip] if ts > cutoff]
+    if len(_rl_fallback[client_ip]) >= RATE_LIMIT_MAX:
         return True
-    RATE_LIMIT_STORE[client_ip].append(now)
+    _rl_fallback[client_ip].append(now)
     return False
 
 from agents.a1_remedy_hunter    import run as a1_run
@@ -68,6 +91,17 @@ app.add_middleware(
     allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["Content-Type", "Authorization", "Accept", "Cache-Control", "X-Requested-With"],
 )
+
+
+# ─── Logging Middleware ───────────────────────────────────────────────────────
+@app.middleware("http")
+async def logging_middleware(request: Request, call_next):
+    start   = time.time()
+    ip      = request.client.host if request.client else "unknown"
+    response = await call_next(request)
+    duration = round((time.time() - start) * 1000)
+    logging.info("%s %s %s — %dms — %s", request.method, request.url.path, response.status_code, duration, ip)
+    return response
 
 
 # ─── Rate Limiting Middleware ─────────────────────────────────────────────────
@@ -123,7 +157,7 @@ class ExercisePlannerInput(BaseModel):
 
 # ─── Global Error Handler ─────────────────────────────────────────────────────
 @app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
+async def global_exception_handler(_: Request, exc: Exception):
     error_str = str(exc).lower()
     if any(x in error_str for x in ["file", "path", "database", "connection", "node_modules"]):
         detail = "An error occurred processing your request"
@@ -692,25 +726,6 @@ async def breathing_test():
     return StreamingResponse(
         run_pipeline("respiratory health and breathing exercises",
                      "breathing_test", cache_key=cache_key),
-        media_type="text/event-stream",
-        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
-    )
-
-
-# ── Home Remedies+ ────────────────────────────────────────────────────────────
-@app.post("/home-remedies/stream")
-async def home_remedies(body: BaseInput):
-    if not body.condition.strip():
-        raise HTTPException(400, "Condition cannot be empty")
-    validation = await validate_input(body.condition)
-    if not validation["is_valid"]:
-        return validation_error_stream(validation)
-
-    cache_key = make_cache_key("home_remedies_plus", body.condition)
-    if validation["status"] in ["serious", "sensitive"]:
-        return validation_warning_stream(validation)
-    return StreamingResponse(
-        run_pipeline(body.condition, "home_remedies_plus", cache_key=cache_key),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
     )
